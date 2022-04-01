@@ -36,6 +36,12 @@ const Nuevo = () => {
                     </Form.Select>
                 </Form.Group>
 
+
+                <Form.Group className="mb-3" controlId="cantidad">
+                    <Form.Label>Cantidad</Form.Label>
+                    <Form.Control type="number" />
+                </Form.Group>
+
                 <Form.Group className="mb-3" controlId="formFile">
                     <Form.Label>PDF/Imagen</Form.Label>
                     <Form.Control type="file" />
