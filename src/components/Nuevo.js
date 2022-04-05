@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
-import { Button, Form, Container, Col, Row, ListGroup } from 'react-bootstrap';
+import { Button, Form, Container, Col, Row } from 'react-bootstrap';
+import { Trash, PlusSquare } from 'react-bootstrap-icons';
 
 const Nuevo = () => {
 
     const [validated, setValidated] = useState(false);
 
     const [fecha, setFecha] = useState('');
-    const [origen, setOrigen] = useState('');
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
 
-    const [origenes, setOrigenes] = useState([]);
+    const [origenes, setOrigenes] = useState(['', '']);
+
+    const handleSelectChange = (value, index) => {
+        const list = [...origenes];
+        list[index] = value;
+        setOrigenes(list);
+    };
+
+    const delOrigen = (index) => {
+        const list = [...origenes];
+        list.splice(index, 1);
+        setOrigenes(list)
+    }
 
     const addOrigen = () => {
-        if (!origen) { return }
         setOrigenes([
             ...origenes,
-            origen
+            ''
         ])
     }
 
@@ -28,7 +39,7 @@ const Nuevo = () => {
         event.stopPropagation();
 
         setValidated(true);
-      };
+    };
 
     return (
         <Container className='bg-light border py-3'>
@@ -37,7 +48,7 @@ const Nuevo = () => {
 
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group className='my-3' controlId='formFecha'>
-                    <Form.Label><h6>Fecha</h6></Form.Label>
+                    <Form.Label><h5>Fecha</h5></Form.Label>
                     <Form.Control
                         type='date'
                         value={fecha}
@@ -47,42 +58,52 @@ const Nuevo = () => {
                 </Form.Group>
 
                 <Container className='border py-3'>
-                    <h6>Origenes</h6>
+                    <h5>Origenes</h5>
 
-                    {
-                        origenes.length > 0 &&
-                        <ListGroup>
-                            {origenes.map((origen) => { return <ListGroup.Item key={origen}>{origen}</ListGroup.Item> })}
-                        </ListGroup>
-                    }
 
                     <Form.Group className='my-3' controlId='formOrigenes'>
-                        <Form.Label><h6>Campo origen</h6></Form.Label>
-                        <Row>
-                            <Col>
-                                <Form.Select
-                                    value={origen}
-                                    onChange={(e) => setOrigen(e.target.value)}
-                                >
-                                    <option value=''>Open this select menu</option>
-                                    <option value='1'>One</option>
-                                    <option value='2'>Two</option>
-                                    <option value='3'>Three</option>
-                                </Form.Select>
-                            </Col>
-                            <Col xs={'auto'}>
-                                <Button
-                                    className='float-end'
-                                    variant='primary'
-                                    onClick={addOrigen}
-                                >Agregar</Button>
-                            </Col>
-                        </Row>
+                        {
+                            origenes.map((origen, i) => {
+                                return (
+                                    <Row key={i} className='my-3'>
+                                        <Col>
+                                            <Form.Select
+                                                value={origen}
+                                                onChange={(e) => handleSelectChange(e.target.value, i)}
+                                                required
+                                            >
+                                                <option value=''>Open this select menu</option>
+                                                <option value='1'>One</option>
+                                                <option value='2'>Two</option>
+                                                <option value='3'>Three</option>
+                                            </Form.Select>
+                                        </Col>
+                                        {
+                                            i > 0 &&
+                                            <Col xs={'auto'}>
+                                                <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
+                                                    <Trash />
+                                                </Button>
+                                            </Col>
+                                        }
+                                    </Row>
+                                )
+                            })
+                        }
                     </Form.Group>
+
+                    <Row>
+                        <Col>
+                            <Button className='float-end' variant='success' onClick={addOrigen}>
+                                <PlusSquare />
+                            </Button>
+                        </Col>
+                    </Row>
+
                 </Container>
 
                 <Form.Group className='my-3' controlId='formBasicCheckbox'>
-                    <Form.Label><h6>CAT destino</h6></Form.Label>
+                    <Form.Label><h5>CAT destino</h5></Form.Label>
                     <Form.Select
                         value={destino}
                         onChange={(e) => setDestino(e.target.value)}
@@ -97,7 +118,7 @@ const Nuevo = () => {
 
 
                 <Form.Group className='my-3' controlId='cantidad'>
-                    <Form.Label><h6>Cantidad</h6></Form.Label>
+                    <Form.Label><h5>Cantidad</h5></Form.Label>
                     <Form.Control
                         type='number'
                         value={cantidad}
@@ -107,7 +128,7 @@ const Nuevo = () => {
                 </Form.Group>
 
                 <Form.Group className='my-3' controlId='formFile'>
-                    <Form.Label><h6>PDF/Imagen</h6></Form.Label>
+                    <Form.Label><h5>PDF/Imagen</h5></Form.Label>
                     <Form.Control
                         type='file'
                         required
