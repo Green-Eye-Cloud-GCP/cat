@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import { Button, Form, Container, Col, Row } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import Axios from 'axios';
+import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Trash, PlusSquare } from 'react-bootstrap-icons';
 
 const Nuevo = () => {
 
     const [validated, setValidated] = useState(false);
+    const [opcionesOrigenes, setOpcionesOrigenes] = useState([]);
+    const [opcionesDestinos, setOpcionesDestinos] = useState([]);
 
     const [fecha, setFecha] = useState('');
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
 
-    const [origenes, setOrigenes] = useState(['', '']);
+    const [origenes, setOrigenes] = useState(['', '60dc6cf46f749500154c1d97']);
 
     const handleSelectChange = (value, index) => {
         const list = [...origenes];
@@ -31,6 +34,22 @@ const Nuevo = () => {
         ])
     }
 
+    useEffect(() => {
+        Axios.get('http://localhost:3000/back/gps', {
+            params: {
+                org: 'adblick',
+                types: ['Deposito insumos', 'Campo']
+            }
+        })
+            .then((response) => {
+                setOpcionesOrigenes(response.data.filter(opcion => opcion.type !== 'CAT'));
+                setOpcionesDestinos(response.data.filter(opcion => opcion.type === 'CAT'));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
     const handleSubmit = (event) => {
         //const form = event.currentTarget;
         //form.checkValidity() === false
@@ -39,6 +58,8 @@ const Nuevo = () => {
         event.stopPropagation();
 
         setValidated(true);
+
+        console.log(origenes);
     };
 
     return (
@@ -72,18 +93,29 @@ const Nuevo = () => {
                                                 onChange={(e) => handleSelectChange(e.target.value, i)}
                                                 required
                                             >
-                                                <option value=''>Open this select menu</option>
-                                                <option value='1'>One</option>
-                                                <option value='2'>Two</option>
-                                                <option value='3'>Three</option>
+                                                <option value=''>Seleccione un origen</option>
+                                                {
+                                                    opcionesOrigenes.map((opcion) => {
+                                                        return <option key={opcion._id} value={opcion._id}>{opcion.name}</option>
+                                                    })
+                                                }
                                             </Form.Select>
                                         </Col>
                                         {
                                             i > 0 &&
                                             <Col xs={'auto'}>
-                                                <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
-                                                    <Trash />
-                                                </Button>
+                                                <OverlayTrigger
+                                                    placement='right'
+                                                    overlay={
+                                                        <Tooltip>
+                                                            Eliminar origen
+                                                        </Tooltip>
+                                                    }
+                                                >
+                                                    <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
+                                                        <Trash />
+                                                    </Button>
+                                                </OverlayTrigger>
                                             </Col>
                                         }
                                     </Row>
@@ -94,9 +126,18 @@ const Nuevo = () => {
 
                     <Row>
                         <Col>
-                            <Button className='float-end' variant='success' onClick={addOrigen}>
-                                <PlusSquare />
-                            </Button>
+                            <OverlayTrigger
+                                placement='right'
+                                overlay={
+                                    <Tooltip>
+                                        Agregar origen
+                                    </Tooltip>
+                                }
+                            >
+                                <Button className='float-end' variant='success' onClick={addOrigen}>
+                                    <PlusSquare />
+                                </Button>
+                            </OverlayTrigger>
                         </Col>
                     </Row>
 
@@ -109,10 +150,12 @@ const Nuevo = () => {
                         onChange={(e) => setDestino(e.target.value)}
                         required
                     >
-                        <option value=''>Open this select menu</option>
-                        <option value='1'>One</option>
-                        <option value='2'>Two</option>
-                        <option value='3'>Three</option>
+                        <option value=''>Seleccione un destino</option>
+                        {
+                            opcionesDestinos.map((opcion) => {
+                                return <option key={opcion._id} value={opcion._id}>{opcion.name}</option>
+                            })
+                        }
                     </Form.Select>
                 </Form.Group>
 
@@ -137,7 +180,7 @@ const Nuevo = () => {
 
 
                 <Row className='mt-5'>
-                    <Col><Button className='float-end' variant='primary' type="submit">Guardar</Button></Col>
+                    <Col><Button className='float-end' variant='primary' type='submit'>Guardar</Button></Col>
                 </Row>
             </Form>
         </Container>
