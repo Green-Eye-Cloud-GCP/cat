@@ -3,24 +3,28 @@ const mongoose = require('mongoose');
 
 const config = require('./config');
 
+async function getMongoDBURI(client) {
+    const [response] = await client.accessSecretVersion({
+        name: config.MONGODB_URI,
+    });
+    
+    return response.payload.data.toString('utf8').replace('DATABASE_NAME', 'cat');
+}
+
 module.exports.init = async function (callback) {
     const client = new SecretManagerServiceClient();
 
     process.env['JWT_PUBLIC'] = config.JWT_PUBLIC;
     process.env['GREEN_EYE_URL'] = config.GREEN_EYE_URL;
 
-    var [response] = await client.accessSecretVersion({
-        name: config.MONGODB_URI,
-    });
+    const MONGODB_URI =  config.MONGODB_URI ? await getMongoDBURI(client) : 'mongodb://localhost/cat';
 
-    process.env['MONGODB_URI'] = response.payload.data.toString('utf8').replace('DATABASE_NAME', 'users');
-
-    mongoose.connect(process.env.MONGODB_URI, function (err) {
+    mongoose.connect(MONGODB_URI, function (err) {
         if (err) { throw (err) }
         return console.log('Connected to MongoDB')
     });
 
-    [response] = await client.accessSecretVersion({
+    var [response] = await client.accessSecretVersion({
         name: config.ADMIN_SECRET,
     });
 
