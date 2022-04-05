@@ -143,7 +143,7 @@ const Nuevo = () => {
 
                 </Container>
 
-                <Form.Group className='my-3' controlId='formBasicCheckbox'>
+                <Form.Group className='my-3' controlId='formDestinos'>
                     <Form.Label><h5>CAT destino</h5></Form.Label>
                     <Form.Select
                         value={destino}
@@ -160,7 +160,7 @@ const Nuevo = () => {
                 </Form.Group>
 
 
-                <Form.Group className='my-3' controlId='cantidad'>
+                <Form.Group className='my-3' controlId='formCantidad'>
                     <Form.Label><h5>Cantidad</h5></Form.Label>
                     <Form.Control
                         type='number'
@@ -170,7 +170,7 @@ const Nuevo = () => {
                     />
                 </Form.Group>
 
-                <Form.Group className='my-3' controlId='formFile'>
+                <Form.Group className='my-3' controlId='formArchivo'>
                     <Form.Label><h5>PDF/Imagen</h5></Form.Label>
                     <Form.Control
                         type='file'

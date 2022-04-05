@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 
 const config = require('./config');
 
-module.exports.init = async function () {
+module.exports.init = async function (callback) {
     const client = new SecretManagerServiceClient();
 
     process.env['JWT_PUBLIC'] = config.JWT_PUBLIC;
+    process.env['GREEN_EYE_URL'] = config.GREEN_EYE_URL;
 
     var [response] = await client.accessSecretVersion({
         name: config.MONGODB_URI,
@@ -16,7 +17,6 @@ module.exports.init = async function () {
 
     mongoose.connect(process.env.MONGODB_URI, function (err) {
         if (err) { throw (err) }
-
         return console.log('Connected to MongoDB')
     });
 
@@ -31,5 +31,6 @@ module.exports.init = async function () {
     });
 
     process.env['JWT_PRIVATE'] = response.payload.data.toString('utf8');
-}
 
+    callback();
+}

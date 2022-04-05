@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const config = require('./config/index');
 const app = require('./app');
 const http = require('http');
 
@@ -8,16 +9,12 @@ const port = process.env.PORT || '3000';
 app.set('port', port);
 
 const server = http.createServer(app);
-
-(async function () {
-  const config = require('./config/index');
-  await config.init();
+config.init(() => {
   server.listen(port);
-})();
+  console.log('Listening');
+});
 
-server.on('error', onError);
-
-function onError(error) {
+server.on('error', (error) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -36,5 +33,5 @@ function onError(error) {
     default:
       throw error;
   }
-}
+});
 
