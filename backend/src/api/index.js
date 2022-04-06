@@ -9,6 +9,6 @@ const upload = multer({
 const comprobante = require('./controllers/comprobante');
 const auth = require('./middleware/auth');
 
-router.post('/comprobantes/nuevo', auth.verifyToken(), upload.single('file'), comprobante.nuevo);
+router.post('/comprobantes/nuevo', auth.verifyToken, upload.single('file'), comprobante.nuevo);
 
 module.exports = router;
