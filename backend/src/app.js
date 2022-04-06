@@ -39,3 +39,5 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
+
+// TODO: gcp permission service account
