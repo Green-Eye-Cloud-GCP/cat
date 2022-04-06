@@ -12,10 +12,14 @@ const nuevo = function (req, res, next) {
         return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });
     }*/
 
-    const comprobante = new Comprobante();
+    const { _id: idUsuario, org } = req.token;
+
+    console.log(req.token);
+    console.log(req.file);
+
 
     const fileExtension = req.file.originalname.substring(req.file.originalname.lastIndexOf('.'));
-    const fileName = req.token._id + '-' + (new Date).getTime().toString() + fileExtension;
+    const fileName = idUsuario + '-' + (new Date).getTime().toString() + fileExtension;
 
     const bucket = storage.bucket(process.env.CLOUD_BUCKET);
     const blob = bucket.file(fileName);
@@ -26,37 +30,27 @@ const nuevo = function (req, res, next) {
     });
 
     blobStream.on('finish', () => {
-        res.status(200).json({ 'error': false, 'message': 'Done!' });
+
+        const { fecha, origen: idOrigen, destino: idDestino, cantidad } = req.body;
+
+        const comprobante = new Comprobante();
+
+        comprobante.org = org;
+        comprobante.usuario = idUsuario;
+        comprobante.fecha = fecha;
+        comprobante.origen = idOrigen;
+        comprobante.destino = idDestino;
+        comprobante.cantidad = cantidad;
+        comprobante.archivo = fileName;
+
+        comprobante.save(function (err) {
+            if (err) { return next(err) }
+    
+            res.status(200).json({ 'error': false, 'message': 'Done!' });
+        });
     });
 
     blobStream.end(req.file.buffer);
-
-    console.log(req.token);
-    console.log(req.file);
-
-
-
-    /*
-    const { roles, email, orgs, password } = req.body;
-
-    const user = new User();
-
-    user.roles = roles;
-    user.email = email;
-    user.orgs = orgs;
-
-    const success = user.setPassword(password);
-
-    if (!success) {
-        return res.status(400).json({ 'error': true, 'message': 'Invalid password' });
-    }
-
-    user.save(function (err) {
-        if (err) { return next(err) }
-
-        res.status(200).json({ 'error': false, 'message': 'Done!' });
-    });
-    */
 }
 
 module.exports = {

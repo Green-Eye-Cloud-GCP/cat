@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	usuario: {
+		type: String,
+		required: true
+	},
 	fecha: {
 		type: Date,
 		required: true
@@ -21,7 +25,7 @@ const schema = new mongoose.Schema({
 		type: Number,
 		required: true
 	},
-	urlArchivo: {
+	archivo: {
 		type: String,
 		required: true
 	}
