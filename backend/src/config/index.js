@@ -25,12 +25,6 @@ module.exports.init = async function (callback) {
         return console.log('Connected to MongoDB')
     });
 
-    var [response] = await client.accessSecretVersion({
-        name: config.ADMIN_SECRET,
-    });
-
-    process.env['ADMIN_SECRET'] = response.payload.data.toString('utf8');
-
     [response] = await client.accessSecretVersion({
         name: config.JWT_PRIVATE,
     });
