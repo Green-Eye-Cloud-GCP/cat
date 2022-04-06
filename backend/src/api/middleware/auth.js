@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const verifyToken = () => {
     return function (req, res, next) {
-        const token = jwt.verify(
+        const payload = jwt.verify(
             req.cookies.token,
             process.env.JWT_PUBLIC,
             {
@@ -18,7 +18,7 @@ const verifyToken = () => {
         }
         */
 
-        req.token = token;
+        req.user = payload;
         next();
     }
 }

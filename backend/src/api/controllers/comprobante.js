@@ -8,13 +8,13 @@ const storage = new Storage();
 const nuevo = function (req, res, next) {
 
     /*
-    if (!req.token.roles.includes('cat.editor')) {
+    if (!req.user.roles.includes('cat.editor')) {
         return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });
     }*/
 
-    const { _id: idUsuario, org } = req.token;
+    const { _id: idUsuario, orgs } = req.user; //TODO org deberia venir en la cookie
 
-    console.log(req.token);
+    console.log(req.user);
     console.log(req.file);
 
 
@@ -31,14 +31,14 @@ const nuevo = function (req, res, next) {
 
     blobStream.on('finish', () => {
 
-        const { fecha, origen: idOrigen, destino: idDestino, cantidad } = req.body;
+        const { fecha, origenes: idsOrigen, destino: idDestino, cantidad } = req.body;
 
         const comprobante = new Comprobante();
 
-        comprobante.org = org;
+        comprobante.org = orgs[0];
         comprobante.usuario = idUsuario;
         comprobante.fecha = fecha;
-        comprobante.origen = idOrigen;
+        comprobante.origenes = idsOrigen;
         comprobante.destino = idDestino;
         comprobante.cantidad = cantidad;
         comprobante.archivo = fileName;

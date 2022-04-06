@@ -13,10 +13,10 @@ const schema = new mongoose.Schema({
 		type: Date,
 		required: true
 	},
-	origen: {
+	origenes: [{
 		type: String,
 		required: true
-	},
+	}],
 	destino: {
 		type: String,
 		required: true

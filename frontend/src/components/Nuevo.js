@@ -10,10 +10,10 @@ const Nuevo = () => {
     const [opcionesDestinos, setOpcionesDestinos] = useState([]);
 
     const [fecha, setFecha] = useState('');
+    const [origenes, setOrigenes] = useState(['']);
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
-
-    const [origenes, setOrigenes] = useState(['', '60dc6cf46f749500154c1d97']);
+    const [archivo, setArchivo] = useState('');
 
     const handleSelectChange = (value, index) => {
         const list = [...origenes];
@@ -35,7 +35,7 @@ const Nuevo = () => {
     }
 
     useEffect(() => {
-        Axios.get('http://localhost:3000/back/gps', {
+        Axios.get('http://localhost:3002/back/gps', {
             params: {
                 org: 'adblick',
                 types: ['Deposito insumos', 'Campo']
@@ -43,7 +43,7 @@ const Nuevo = () => {
         })
             .then((response) => {
                 setOpcionesOrigenes(response.data.filter(opcion => opcion.type !== 'CAT'));
-                setOpcionesDestinos(response.data.filter(opcion => opcion.type === 'CAT'));
+                setOpcionesDestinos(response.data.filter(opcion => opcion.type !== 'CAT')); //TODO
             })
             .catch((error) => {
                 console.log(error);
@@ -54,12 +54,30 @@ const Nuevo = () => {
         //const form = event.currentTarget;
         //form.checkValidity() === false
 
+         //TODO: ver como implementar esto
+
         event.preventDefault();
         event.stopPropagation();
 
         setValidated(true);
 
-        console.log(origenes);
+        const formData = new FormData();
+        formData.append('fecha', fecha);
+        formData.append('origenes', origenes);
+        formData.append('destino', destino);
+        formData.append('cantidad', cantidad);
+        formData.append('file', archivo);
+
+        Axios.post(
+            '/api/comprobantes/nuevo',
+            formData
+        )
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     return (
@@ -174,6 +192,8 @@ const Nuevo = () => {
                     <Form.Label><h5>PDF/Imagen</h5></Form.Label>
                     <Form.Control
                         type='file'
+                        //value={archivo} //TODO: ver como implementar esto
+                        onChange={(e) => setArchivo(e.target.files[0])}
                         required
                     />
                 </Form.Group>
