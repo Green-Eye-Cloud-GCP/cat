@@ -26,7 +26,7 @@ app.use(function (req, res, next) {
         algorithm: 'RS256'
       }
     );
-    if (legit) {
+    if (legit) { //TODO includes cat.
       return handler(req, res, next);
     }
   }

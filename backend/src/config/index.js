@@ -11,6 +11,15 @@ async function getMongoDBURI(client) {
     return response.payload.data.toString('utf8').replace('DATABASE_NAME', 'cat');
 }
 
+function mongoConnect(MONGODB_URI) {
+    return new Promise((resolve, reject) => {
+        mongoose.connect(MONGODB_URI, function (err) {
+            if (err) { reject(err) }
+            resolve()
+        });
+    })
+}
+
 module.exports.init = async function (callback) {
     const client = new SecretManagerServiceClient();
 
@@ -20,10 +29,12 @@ module.exports.init = async function (callback) {
 
     const MONGODB_URI =  config.MONGODB_URI ? await getMongoDBURI(client) : 'mongodb://localhost/cat';
 
-    mongoose.connect(MONGODB_URI, function (err) {
-        if (err) { throw (err) }
-        return console.log('Connected to MongoDB')
-    });
+    try {
+        await mongoConnect(MONGODB_URI);
+        console.log('Connected to MongoDB');
+    } catch (err) {
+        throw (err)
+    }
 
     [response] = await client.accessSecretVersion({
         name: config.JWT_PRIVATE,
