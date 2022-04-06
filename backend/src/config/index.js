@@ -16,6 +16,7 @@ module.exports.init = async function (callback) {
 
     process.env['JWT_PUBLIC'] = config.JWT_PUBLIC;
     process.env['GREEN_EYE_URL'] = config.GREEN_EYE_URL;
+    process.env['CLOUD_BUCKET'] = config.CLOUD_BUCKET;
 
     const MONGODB_URI =  config.MONGODB_URI ? await getMongoDBURI(client) : 'mongodb://localhost/cat';
 

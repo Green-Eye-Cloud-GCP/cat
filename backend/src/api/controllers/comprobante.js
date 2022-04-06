@@ -1,24 +1,40 @@
 const mongoose = require('mongoose');
 const Comprobante = mongoose.model('Comprobante');
 const jwt = require('jsonwebtoken');
+const { Storage } = require('@google-cloud/storage');
+
+const storage = new Storage();
 
 const nuevo = function (req, res, next) {
 
-    const legit = jwt.verify(
-        req.cookies.token,
-        process.env.JWT_PUBLIC,
-        {
-            algorithm: 'RS256'
-        }
-    );
     /*
-    if (!legit.roles.includes('cat.editor')) {
+    if (!req.token.roles.includes('cat.editor')) {
         return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });
     }*/
 
+    const comprobante = new Comprobante();
+
+    const fileExtension = req.file.originalname.substring(req.file.originalname.lastIndexOf('.'));
+    const fileName = req.token._id + '-' + (new Date).getTime().toString() + fileExtension;
+
+    const bucket = storage.bucket(process.env.CLOUD_BUCKET);
+    const blob = bucket.file(fileName);
+    const blobStream = blob.createWriteStream();
+
+    blobStream.on('error', (err) => {
+        next(err);
+    });
+
+    blobStream.on('finish', () => {
+        res.status(200).json({ 'error': false, 'message': 'Done!' });
+    });
+
+    blobStream.end(req.file.buffer);
+
+    console.log(req.token);
     console.log(req.file);
 
-    res.status(200).json({ 'error': false, 'message': 'Done!' });
+
 
     /*
     const { roles, email, orgs, password } = req.body;

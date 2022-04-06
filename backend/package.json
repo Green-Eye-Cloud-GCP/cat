@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^3.11.0",
+    "@google-cloud/storage": "^5.18.3",
     "cookie-parser": "~1.4.4",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
