@@ -68,6 +68,8 @@ const Nuevo = () => {
         formData.append('cantidad', cantidad);
         formData.append('file', archivo);
 
+        formData.append('token', "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDkyOTgyNTksImV4cCI6MTY0OTM4NDY1OX0.DEdXG743c_cRKtFuhpajf3MW_Pe8lNqYTv9-e8hEhAjHif29tiMfAMD4dfMAZUfDpKlS373sa1U7zEV5mxa63A");
+
         Axios.post(
             '/api/comprobantes/nuevo',
             formData
