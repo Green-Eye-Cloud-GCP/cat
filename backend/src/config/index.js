@@ -14,7 +14,7 @@ async function getMongoDBURI(client) {
 function mongoConnect(MONGODB_URI) {
     return new Promise((resolve, reject) => {
         mongoose.connect(MONGODB_URI, function (err) {
-            if (err) { reject(err) }
+            if (err) { return reject(err) }
             resolve()
         });
     })

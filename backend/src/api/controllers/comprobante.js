@@ -52,29 +52,36 @@ const getComprobantes = function (req, res, next) {
 
     const { org } = req.user;
 
-    function syncRequest(url) {
+    function syncRequest(url, i, key) {
         return new Promise((resolve, reject) => {
             request.get({
                 url: url,
                 json: true
             }, function (err, response, body) {
-                if (err) { reject(err) }
-                resolve(body);
+                if (err) { return reject(err) }
+                resolve([body, i, key]);
             })
         })
     }
 
-    Comprobante.find({ 'org': org }, async (err, docs) => {
+    Comprobante.find({ 'org': org }).lean().exec(async (err, docs) => {
         if (err) { next(err) }
 
-        for (i = 0; i < docs.length; i++) {
-            const doc = docs[i];
+        const promises = [];
+        docs.forEach((doc, i) => {
+            promises.push(syncRequest('http://localhost:3002/back/gps/' + doc.destino, i, 'destino'));
+        })
 
-            doc.destino = (await syncRequest('http://localhost:3002/back/gps/' + doc.destino)).name;
-            //doc.usuario = (await syncRequest('http://localhost:3002/back/user/' + doc.usuario)).user;
-        }
+        Promise.all(promises)
+            .then((results) => {
+                results.forEach(([body, i, key]) => {
+                    docs[i][key] = body;
+                })
 
-        res.status(200).json(docs);
+                res.status(200).json(docs);
+            })
+            .catch(err => next(err))
+
     })
 }
 

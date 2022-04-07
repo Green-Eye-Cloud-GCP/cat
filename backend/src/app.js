@@ -34,7 +34,7 @@ app.use(function (req, res, next) {
       return handler(req, res, next);
     }
   }
-  res.redirect(process.env.GREEN_EYE_URL);
+  res.redirect('/');
 });
 
 app.use(function (err, req, res, next) {
