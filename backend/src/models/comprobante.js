@@ -5,7 +5,7 @@ const schema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	user: {
+	user: { 				// id de usuario
 		type: String,
 		required: true
 	},
@@ -13,11 +13,11 @@ const schema = new mongoose.Schema({
 		type: Date,
 		required: true
 	},
-	origenes: [{
+	origenes: [{ 			// ids de origen
 		type: String,
 		required: true
 	}],
-	destino: {
+	destino: {				// id de destino
 		type: String,
 		required: true
 	},
@@ -25,7 +25,7 @@ const schema = new mongoose.Schema({
 		type: Number,
 		required: true
 	},
-	archivo: {
+	archivo: {				// nombre de archivo en bucket
 		type: String,
 		required: true
 	}
