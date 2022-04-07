@@ -7,7 +7,7 @@ async function getMongoDBURI(client) {
     const [response] = await client.accessSecretVersion({
         name: config.MONGODB_URI,
     });
-    
+
     return response.payload.data.toString('utf8').replace('DATABASE_NAME', 'cat');
 }
 
@@ -20,14 +20,14 @@ function mongoConnect(MONGODB_URI) {
     })
 }
 
-module.exports.init = async function (callback) {
+const init = async function (callback) {
     const client = new SecretManagerServiceClient();
 
     process.env['JWT_PUBLIC'] = config.JWT_PUBLIC;
     process.env['GREEN_EYE_URL'] = config.GREEN_EYE_URL;
     process.env['CLOUD_BUCKET'] = config.CLOUD_BUCKET;
 
-    const MONGODB_URI =  config.MONGODB_URI ? await getMongoDBURI(client) : 'mongodb://localhost/cat';
+    const MONGODB_URI = config.MONGODB_URI ? await getMongoDBURI(client) : 'mongodb://localhost/cat';
 
     try {
         await mongoConnect(MONGODB_URI);
@@ -44,3 +44,5 @@ module.exports.init = async function (callback) {
 
     callback();
 }
+
+module.exports = { init }

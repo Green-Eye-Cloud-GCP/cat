@@ -7,12 +7,11 @@ const storage = new Storage();
 
 const nuevo = function (req, res, next) {
 
-    /*
     if (!req.user.roles.includes('cat.editor')) {
         return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });
-    }*/
+    }
 
-    const { _id: idUsuario, orgs } = req.user; //TODO org deberia venir en la cookie
+    const { _id: idUsuario, org } = req.user;
 
     console.log(req.user);
     console.log(req.file);
@@ -35,7 +34,7 @@ const nuevo = function (req, res, next) {
 
         const comprobante = new Comprobante();
 
-        comprobante.org = orgs[0];
+        comprobante.org = org;
         comprobante.usuario = idUsuario;
         comprobante.fecha = fecha;
         comprobante.origenes = idsOrigen;

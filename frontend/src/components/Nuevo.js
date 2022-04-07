@@ -38,12 +38,12 @@ const Nuevo = () => {
         Axios.get('http://localhost:3002/back/gps', {
             params: {
                 org: 'adblick',
-                types: ['Deposito insumos', 'Campo']
+                types: ['Deposito insumos', 'Campo', 'CAT']
             }
         })
             .then((response) => {
                 setOpcionesOrigenes(response.data.filter(opcion => opcion.type !== 'CAT'));
-                setOpcionesDestinos(response.data.filter(opcion => opcion.type !== 'CAT')); //TODO
+                setOpcionesDestinos(response.data.filter(opcion => opcion.type === 'CAT'));
             })
             .catch((error) => {
                 console.log(error);
@@ -192,7 +192,6 @@ const Nuevo = () => {
                     <Form.Label><h5>PDF/Imagen</h5></Form.Label>
                     <Form.Control
                         type='file'
-                        //value={archivo} //TODO: ver como implementar esto
                         onChange={(e) => setArchivo(e.target.files[0])}
                         required
                     />

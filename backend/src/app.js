@@ -19,14 +19,18 @@ app.use('/api', api);
 const handler = express.static(path.join(__dirname, 'public'));
 app.use(function (req, res, next) {
   if (req.cookies.token) {
-    const legit = jwt.verify(
+
+    const payload = jwt.verify(
       req.cookies.token,
       process.env.JWT_PUBLIC,
       {
         algorithm: 'RS256'
       }
     );
-    if (legit) { //TODO includes cat.
+      
+    const roles = payload.roles.filter(role => role.startsWith('cat.'));
+
+    if (roles.length > 0) {
       return handler(req, res, next);
     }
   }
@@ -39,5 +43,3 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
-
-// TODO: gcp permission service account
