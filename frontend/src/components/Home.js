@@ -2,7 +2,7 @@ import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Table, Button, Row, Col, Pagination, Placeholder } from 'react-bootstrap';
-import { Trash, Pencil } from 'react-bootstrap-icons';
+import { Trash, Pencil, Eye } from 'react-bootstrap-icons';
 
 const Home = () => {
 
@@ -24,24 +24,31 @@ const Home = () => {
                 return (
                     <tr key={'row' + i}>
                         <td>{comprobante.fecha.toLocaleDateString()}</td>
-                        <td>{comprobante.origenes.length}</td>
                         <td>{comprobante.destino.name}</td>
                         <td>{comprobante.cantidad}</td>
-                        <td>{comprobante.user}</td>
+                        <td>{comprobante.user.name}</td>
                         <td>
-                            <Container className='center'>
-                                <Pencil className='mx-1' color={'green'} />
-                                <Trash className='mx-1' color={'red'} />
+                            <Container>
+                                <Row>
+                                    <Col className='mb-1'>
+                                        <Button variant='success'><Eye /></Button>
+                                    </Col>
+                                    <Col className='mb-1's>
+                                        <Button><Pencil /></Button>
+                                    </Col>
+                                    <Col className='mb-1' >
+                                        <Button variant='danger'><Trash /></Button>
+                                    </Col>
+                                </Row>
                             </Container>
                         </td>
-                    </tr>
+                    </tr >
                 )
             })
         }
 
         return (
             <tr>
-                <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
                 <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
                 <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
                 <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
@@ -77,12 +84,11 @@ const Home = () => {
             </Row>
             <Row>
                 <Col>
-                    <div className="overflow-auto">
+                    <div className='overflow-auto'>
                         <Table striped bordered hover >
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
-                                    <th>Origenes</th>
                                     <th>Destino</th>
                                     <th>Cantidad</th>
                                     <th>Usuario</th>

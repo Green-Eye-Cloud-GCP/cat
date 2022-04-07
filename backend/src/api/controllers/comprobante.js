@@ -1,6 +1,6 @@
 const path = require('path');
 const mongoose = require('mongoose');
-const request = require('request');
+const axios = require('axios');
 const { Storage } = require('@google-cloud/storage');
 
 const Comprobante = mongoose.model('Comprobante');
@@ -52,15 +52,19 @@ const getComprobantes = function (req, res, next) {
 
     const { org } = req.user;
 
-    function syncRequest(url, i, key) {
+    function syncRequest(url, token, i, key) {
         return new Promise((resolve, reject) => {
-            request.get({
-                url: url,
-                json: true
-            }, function (err, response, body) {
-                if (err) { return reject(err) }
-                resolve([body, i, key]);
+            axios.get(url, {
+                params: {
+                    token: token
+                }
             })
+                .then(function (response) {
+                    resolve([response.data.data ? response.data.data : response.data, i, key]);
+                })
+                .catch(function (error) {
+                    reject(error);
+                })
         })
     }
 
@@ -69,13 +73,14 @@ const getComprobantes = function (req, res, next) {
 
         const promises = [];
         docs.forEach((doc, i) => {
-            promises.push(syncRequest('http://localhost:3002/back/gps/' + doc.destino, i, 'destino'));
+            promises.push(syncRequest('http://localhost:3002/back/gps/' + doc.destino, req.token, i, 'destino'));
+            promises.push(syncRequest('https://users-ys4nimzqdq-uc.a.run.app/api/users/' + doc.user, req.token, i, 'user'));
         })
 
         Promise.all(promises)
             .then((results) => {
-                results.forEach(([body, i, key]) => {
-                    docs[i][key] = body;
+                results.forEach(([data, i, key]) => {
+                    docs[i][key] = data;
                 })
 
                 res.status(200).json(docs);

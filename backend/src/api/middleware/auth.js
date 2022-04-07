@@ -2,8 +2,10 @@ const jwt = require('jsonwebtoken');
 
 const verifyToken = function (req, res, next) {
     try {
+        const token = req.cookies.token || req.body.token || req.query.token;
+
         const payload = jwt.verify(
-            req.cookies.token || req.body.token || req.query.token,
+            token,
             process.env.JWT_PUBLIC,
             {
                 algorithm: 'RS256'
@@ -17,6 +19,7 @@ const verifyToken = function (req, res, next) {
         }
 
         req.user = payload;
+        req.token = token;
         next();
 
     } catch (err) {
