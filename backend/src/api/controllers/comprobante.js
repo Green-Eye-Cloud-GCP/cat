@@ -6,15 +6,15 @@ const { Storage } = require('@google-cloud/storage');
 const Comprobante = mongoose.model('Comprobante');
 const storage = new Storage();
 
-const nuevo = function (req, res, next) {
+const newComprobante = function (req, res, next) {
 
     if (!req.user.roles.includes('cat.editor')) {
         return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });
     }
 
-    const { _id: idUsuario, org } = req.user;
+    const { _id: idUser, org } = req.user;
 
-    const fileName = idUsuario + '-' + (new Date).getTime().toString() + path.extname(req.file.originalname);
+    const fileName = idUser + '-' + (new Date).getTime().toString() + path.extname(req.file.originalname);
 
     const bucket = storage.bucket(process.env.CLOUD_BUCKET);
     const blob = bucket.file(fileName);
@@ -31,7 +31,7 @@ const nuevo = function (req, res, next) {
         const comprobante = new Comprobante();
 
         comprobante.org = org;
-        comprobante.usuario = idUsuario;
+        comprobante.user = idUser;
         comprobante.fecha = fecha;
         comprobante.origenes = idsOrigen;
         comprobante.destino = idDestino;
@@ -86,6 +86,6 @@ const getComprobantes = function (req, res, next) {
 }
 
 module.exports = {
-    nuevo,
+    newComprobante,
     getComprobantes
 };

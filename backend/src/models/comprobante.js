@@ -5,7 +5,7 @@ const schema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	usuario: {
+	user: {
 		type: String,
 		required: true
 	},
