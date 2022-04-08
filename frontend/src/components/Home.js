@@ -2,7 +2,8 @@ import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Table, Button, Row, Col, Pagination, Placeholder } from 'react-bootstrap';
-import { Trash, Pencil, Eye } from 'react-bootstrap-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPencil, faEye, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
 
@@ -38,13 +39,13 @@ const Home = () => {
                             <Container>
                                 <Row>
                                     <Col className='mb-1'>
-                                        <Button variant='success'><Eye /></Button>
+                                        <Button variant='success'><FontAwesomeIcon icon={faEye} /></Button>
                                     </Col>
                                     <Col className='mb-1'>
-                                        <Button><Pencil /></Button>
+                                        <Button><FontAwesomeIcon icon={faPencil} /></Button>
                                     </Col>
                                     <Col className='mb-1' >
-                                        <Button variant='danger'><Trash /></Button>
+                                        <Button variant='danger'><FontAwesomeIcon icon={faTrashCan} /></Button>
                                     </Col>
                                 </Row>
                             </Container>

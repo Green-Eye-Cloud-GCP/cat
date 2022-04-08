@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Axios from 'axios';
 import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { Trash, PlusSquare } from 'react-bootstrap-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const Nuevo = () => {
 
@@ -141,7 +142,7 @@ const Nuevo = () => {
                                                     }
                                                 >
                                                     <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
-                                                        <Trash />
+                                                        <FontAwesomeIcon icon={faTrashCan} />
                                                     </Button>
                                                 </OverlayTrigger>
                                             </Col>
@@ -163,7 +164,7 @@ const Nuevo = () => {
                                 }
                             >
                                 <Button className='float-end' variant='success' onClick={addOrigen}>
-                                    <PlusSquare />
+                                    <FontAwesomeIcon icon={faPlus} />
                                 </Button>
                             </OverlayTrigger>
                         </Col>
