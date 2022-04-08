@@ -22,13 +22,13 @@ app.use(function (req, res, next) {
     return handler(req, res, next);
   } catch (err) {
     console.log(err)
-    res.redirect('/');
+    return res.redirect('/');
   }
 });
 
 app.use(function (err, req, res, next) {
-  console.log(err)
-  res.status(err.status || 500).json({ 'error': true, 'message': err.message });
+  console.error(err)
+  return res.status(err.status || 500).json({ 'error': true, 'message': err.message });
 });
 
 module.exports = app;

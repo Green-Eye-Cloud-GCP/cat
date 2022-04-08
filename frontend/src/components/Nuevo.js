@@ -63,12 +63,13 @@ const Nuevo = () => {
         const formData = new FormData();
         formData.append('fecha', fecha);
         formData.append('origenes', origenes);
+        console.log(origenes);
         formData.append('destino', destino);
         formData.append('cantidad', cantidad);
         formData.append('file', archivo);
 
         //TODO: eliminar
-        formData.append('token', "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDkyOTgyNTksImV4cCI6MTY0OTM4NDY1OX0.DEdXG743c_cRKtFuhpajf3MW_Pe8lNqYTv9-e8hEhAjHif29tiMfAMD4dfMAZUfDpKlS373sa1U7zEV5mxa63A");
+        formData.append('token', "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g");
 
         Axios.post(
             '/api/comprobantes',

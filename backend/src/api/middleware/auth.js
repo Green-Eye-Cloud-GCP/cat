@@ -10,7 +10,7 @@ const verifyToken = function (req, res, next) {
         next();
 
     } catch (err) {
-        next(err);
+        return next(err);
     }
 }
 

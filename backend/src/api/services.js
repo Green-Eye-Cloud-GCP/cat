@@ -13,8 +13,8 @@ const promesifyRequest = function (url, token, i, key) {
             .then(function (response) {
                 resolve([response.data.data ? response.data.data : response.data, i, key]);
             })
-            .catch(function (error) {
-                reject(error);
+            .catch(function (err) {
+                reject(err);
             })
     })
 }
@@ -33,14 +33,33 @@ const generateReadSignedUrl = function (fileName, i, key) {
             .then(function (response) {
                 resolve([response, i, key]);
             })
-            .catch(function (error) {
-                reject(error);
+            .catch(function (err) {
+                reject(err);
             })
     })
 }
 
+const uploadFile = function (fileName, buffer) {
+    return new Promise((resolve, reject) => {
+
+        const bucket = storage.bucket(process.env.CLOUD_BUCKET);
+        const blob = bucket.file(fileName);
+        const blobStream = blob.createWriteStream();
+
+        blobStream.on('error', (err) => {
+            return reject(err);
+        });
+
+        blobStream.on('finish', () => { 
+            return resolve()
+        })
+
+        blobStream.end(buffer);
+    })
+}
+
 module.exports = {
-    storage,
     promesifyRequest,
-    generateReadSignedUrl
+    generateReadSignedUrl,
+    uploadFile
 }

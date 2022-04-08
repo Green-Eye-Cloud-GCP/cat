@@ -32,12 +32,12 @@ env.init()
     throw err;
   })
 
-server.on('error', (error) => {
-  if (error.syscall !== 'listen') {
-    throw error;
+server.on('error', (err) => {
+  if (err.syscall !== 'listen') {
+    throw err;
   }
 
-  switch (error.code) {
+  switch (err.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
       process.exit(1);
@@ -45,6 +45,6 @@ server.on('error', (error) => {
       console.error(bind + ' is already in use');
       process.exit(1);
     default:
-      throw error;
+      throw err;
   }
 });
