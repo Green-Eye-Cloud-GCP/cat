@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-const config = require('./config/index');
-const app = require('./app');
+const env = require('./env');
+const db = require('../db/index');
+const app = require('../app');
 const http = require('http');
 
 const port = process.env.PORT || 3001;
@@ -12,10 +13,22 @@ const bind = typeof port === 'string'
 app.set('port', port);
 
 const server = http.createServer(app);
-config.init(() => {
-  server.listen(port);
-  console.log('Listening on ' + bind);
-});
+env.init()
+  .then(() => {
+    console.log('Environment initialized');
+    db.mongoConnect()
+      .then(() => {
+        console.log('Connected to MongoDB');
+        server.listen(port);
+        console.log('Listening on ' + bind);
+      })
+      .catch((err) => {
+        throw err;
+      })
+  })
+  .catch((err) => {
+    throw err;
+  })
 
 server.on('error', (error) => {
   if (error.syscall !== 'listen') {

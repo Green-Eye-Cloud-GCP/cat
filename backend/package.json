@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node ./src/server",
-    "dev": "set GOOGLE_APPLICATION_CREDENTIALS=credentials.json&& nodemon ./src/server"
+    "start": "node ./src/server/index",
+    "dev": "set GOOGLE_APPLICATION_CREDENTIALS=credentials.json&& nodemon ./src/server/index"
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^3.11.0",

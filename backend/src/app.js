@@ -4,8 +4,6 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
-require('./models/index');
-
 const app = express();
 
 app.use(logger('dev'));
