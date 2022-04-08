@@ -1,24 +1,11 @@
-const jwt = require('jsonwebtoken');
+const services = require('../../services');
 
 const verifyToken = function (req, res, next) {
     try {
         const token = req.cookies.token || req.headers.token || req.body.token || req.query.token;
 
-        const payload = jwt.verify(
-            token,
-            process.env.JWT_PUBLIC,
-            {
-                algorithm: 'RS256'
-            }
-        );
+        req.user = services.verifyToken(token);
 
-        const roles = payload.roles.filter(role => role.startsWith(process.env.ROLE_ROOT));
-
-        if (roles.length == 0) {
-            return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });
-        }
-
-        req.user = payload;
         req.token = token;
         next();
 

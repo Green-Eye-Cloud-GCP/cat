@@ -16,6 +16,7 @@ const server = http.createServer(app);
 env.init()
   .then(() => {
     console.log('Environment initialized');
+
     db.mongoConnect()
       .then(() => {
         console.log('Connected to MongoDB');
@@ -25,6 +26,7 @@ env.init()
       .catch((err) => {
         throw err;
       })
+      
   })
   .catch((err) => {
     throw err;

@@ -2,7 +2,8 @@ const path = require('path');
 const express = require('express');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
+
+const services = require('./services');
 
 const app = express();
 
@@ -16,23 +17,13 @@ app.use('/api', api);
 
 const handler = express.static(path.join(__dirname, 'public'));
 app.use(function (req, res, next) {
-  if (req.cookies.token) {
-
-    const payload = jwt.verify(
-      req.cookies.token,
-      process.env.JWT_PUBLIC,
-      {
-        algorithm: 'RS256'
-      }
-    );
-      
-    const roles = payload.roles.filter(role => role.startsWith(process.env.ROLE_ROOT));
-
-    if (roles.length > 0) {
-      return handler(req, res, next);
-    }
+  try {
+    services.verifyToken(req.cookies.token);
+    return handler(req, res, next);
+  } catch (err) {
+    console.log(err)
+    res.redirect('/');
   }
-  res.redirect('/');
 });
 
 app.use(function (err, req, res, next) {
