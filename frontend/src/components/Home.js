@@ -21,7 +21,7 @@ const Home = () => {
             list.push(i);
         }
         setPages(list);
-        
+
         setCurrentPage(pageNumber);
     }
 
@@ -68,6 +68,7 @@ const Home = () => {
     useEffect(() => {
         Axios.get('/api/comprobantes', {
             params: {
+                //TODO: eliminar
                 token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g'
             }
         })

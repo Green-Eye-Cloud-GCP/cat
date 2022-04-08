@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Axios from 'axios';
 import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Trash, PlusSquare } from 'react-bootstrap-icons';
@@ -14,6 +14,8 @@ const Nuevo = () => {
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
     const [archivo, setArchivo] = useState('');
+
+    const fileInputRef = useRef();
 
     const handleSelectChange = (value, index) => {
         const list = [...origenes];
@@ -55,10 +57,11 @@ const Nuevo = () => {
         event.preventDefault();
         event.stopPropagation();
 
-        setValidated(true);
-
         const form = event.currentTarget;
-        if (form.checkValidity() === false) { return }
+        if (form.checkValidity() === false) {
+            setValidated(true);
+            return
+        }
 
         const formData = new FormData();
         formData.append('fecha', fecha);
@@ -77,6 +80,12 @@ const Nuevo = () => {
         )
             .then((response) => {
                 console.log(response.data);
+                setFecha('');
+                setOrigenes(['']);
+                setDestino('');
+                setCantidad('');
+                setArchivo('');
+                fileInputRef.current.value = '';
             })
             .catch((error) => {
                 console.log(error);
@@ -195,6 +204,7 @@ const Nuevo = () => {
                     <Form.Label><h5>PDF/Imagen</h5></Form.Label>
                     <Form.Control
                         type='file'
+                        ref={fileInputRef}
                         onChange={(e) => setArchivo(e.target.files[0])}
                         required
                     />
