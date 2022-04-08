@@ -13,7 +13,6 @@ const Nuevo = () => {
     const [origenes, setOrigenes] = useState(['']);
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
-    const [archivo, setArchivo] = useState('');
 
     const fileInputRef = useRef();
 
@@ -69,7 +68,7 @@ const Nuevo = () => {
         console.log(origenes);
         formData.append('destino', destino);
         formData.append('cantidad', cantidad);
-        formData.append('file', archivo);
+        formData.append('file', fileInputRef.current.files[0]);
 
         //TODO: eliminar
         formData.append('token', "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g");
@@ -84,7 +83,6 @@ const Nuevo = () => {
                 setOrigenes(['']);
                 setDestino('');
                 setCantidad('');
-                setArchivo('');
                 fileInputRef.current.value = '';
             })
             .catch((error) => {
@@ -205,7 +203,6 @@ const Nuevo = () => {
                     <Form.Control
                         type='file'
                         ref={fileInputRef}
-                        onChange={(e) => setArchivo(e.target.files[0])}
                         required
                     />
                 </Form.Group>
