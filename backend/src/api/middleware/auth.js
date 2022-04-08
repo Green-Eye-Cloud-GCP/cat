@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const verifyToken = function (req, res, next) {
     try {
-        const token = req.cookies.token || req.body.token || req.query.token;
+        const token = req.cookies.token || req.headers.token || req.body.token || req.query.token;
 
         const payload = jwt.verify(
             token,
@@ -12,7 +12,7 @@ const verifyToken = function (req, res, next) {
             }
         );
 
-        const roles = payload.roles.filter(role => role.startsWith('cat.'));
+        const roles = payload.roles.filter(role => role.startsWith(process.env.ROLE_ROOT));
 
         if (roles.length == 0) {
             return res.status(400).json({ 'error': true, 'message': 'Unauthorized request' });

@@ -16,6 +16,7 @@ const init = async function () {
     process.env['JWT_PUBLIC'] = config.JWT_PUBLIC;
     process.env['GREEN_EYE_URL'] = config.GREEN_EYE_URL;
     process.env['CLOUD_BUCKET'] = config.CLOUD_BUCKET;
+    process.env['ROLE_ROOT'] = config.ROLE_ROOT;
 
     process.env['MONGODB_URI'] = config.MONGODB_URI
         ? (await getSecret(client, config.MONGODB_URI)).replace('DATABASE_NAME', config.DB_NAME)

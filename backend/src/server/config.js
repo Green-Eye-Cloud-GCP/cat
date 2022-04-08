@@ -4,6 +4,7 @@ const JWT_PUBLIC = '-----BEGIN PUBLIC KEY-----\nMFswDQYJKoZIhvcNAQEBBQADSgAwRwJA
 const GREEN_EYE_URL = 'https://www.greeneye.cloud';
 const CLOUD_BUCKET = 'archivos-cat';
 const DB_NAME = 'cat';
+const ROLE_ROOT = 'cat.';
 
 module.exports = {
     MONGODB_URI,
@@ -11,5 +12,6 @@ module.exports = {
     JWT_PUBLIC,
     GREEN_EYE_URL,
     CLOUD_BUCKET,
-    DB_NAME
+    DB_NAME,
+    ROLE_ROOT
 };

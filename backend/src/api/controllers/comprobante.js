@@ -50,7 +50,7 @@ const getComprobantes = function (req, res, next) {
 
     const { org } = req.user;
 
-    Comprobante.find({ 'org': org }).lean().exec((err, docs) => {
+    Comprobante.find({ 'org': org }).lean().exec((err, docs) => { //TODO: select
         if (err) { next(err) }
 
         const promises = [];

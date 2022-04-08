@@ -26,7 +26,7 @@ app.use(function (req, res, next) {
       }
     );
       
-    const roles = payload.roles.filter(role => role.startsWith('cat.'));
+    const roles = payload.roles.filter(role => role.startsWith(process.env.ROLE_ROOT));
 
     if (roles.length > 0) {
       return handler(req, res, next);
