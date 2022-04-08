@@ -38,13 +38,13 @@ const Home = () => {
                         <td>
                             <Container>
                                 <Row>
-                                    <Col className='mb-1'>
+                                    <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
                                         <Button variant='success'><FontAwesomeIcon icon={faEye} /></Button>
                                     </Col>
-                                    <Col className='mb-1'>
-                                        <Button><FontAwesomeIcon icon={faPencil} /></Button>
+                                    <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
+                                        <Button disabled><FontAwesomeIcon icon={faPencil} /></Button>
                                     </Col>
-                                    <Col className='mb-1' >
+                                    <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
                                         <Button variant='danger'><FontAwesomeIcon icon={faTrashCan} /></Button>
                                     </Col>
                                 </Row>
@@ -108,22 +108,20 @@ const Home = () => {
             </Row>
             <Row>
                 <Col>
-                    <div className='overflow-auto'>
-                        <Table striped bordered hover >
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Destino</th>
-                                    <th>Cantidad</th>
-                                    <th>Usuario</th>
-                                    <th>Opciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <TableContent />
-                            </tbody>
-                        </Table>
-                    </div>
+                    <Table  bordered  responsive>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Destino</th>
+                                <th>Cantidad</th>
+                                <th>Usuario</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <TableContent />
+                        </tbody>
+                    </Table>
                 </Col>
             </Row>
             <Row>

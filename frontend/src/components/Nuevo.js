@@ -64,7 +64,11 @@ const Nuevo = () => {
         }
 
         const formData = new FormData();
-        formData.append('fecha', fecha);
+
+        const fechaUTC = new Date(fecha)
+        const fechaLocal = new Date(fechaUTC.getUTCFullYear() + '-' + (fechaUTC.getUTCMonth() + 1) + '-' + fechaUTC.getUTCDate());
+
+        formData.append('fecha', fechaLocal);
         formData.append('origenes', origenes);
         console.log(origenes);
         formData.append('destino', destino);

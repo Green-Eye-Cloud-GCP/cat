@@ -59,7 +59,7 @@ const getComprobantes = function (req, res, next) {
 
             const promises = [];
             docs.forEach((doc, i) => {
-                //promises.push(services.promesifyRequest('http://localhost:3002/back/gps/' + doc.destino, token, i, 'destino'));
+                promises.push(services.promesifyRequest('http://localhost:3002/back/gps/' + doc.destino, token, i, 'destino'));
                 //promises.push(services.promesifyRequest('http://localhost:3003/api/users/' + doc.user, token, i, 'user'));
             })
 
