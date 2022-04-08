@@ -52,7 +52,7 @@ const getComprobantes = function (req, res, next) {
 
     const { org } = req.user;
 
-    function syncRequest(url, token, i, key) {
+    function promesifyRequest(url, token, i, key) {
         return new Promise((resolve, reject) => {
             axios.get(url, {
                 params: {
@@ -68,13 +68,34 @@ const getComprobantes = function (req, res, next) {
         })
     }
 
-    Comprobante.find({ 'org': org }).lean().exec(async (err, docs) => {
+    function generateReadSignedUrl(fileName, i, key) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                version: 'v4',
+                action: 'read',
+                expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+            };
+
+            const bucket = storage.bucket(process.env.CLOUD_BUCKET);
+            const blob = bucket.file(fileName);
+            blob.getSignedUrl(options)
+                .then(function (response) {
+                    resolve([response, i, key]);
+                })
+                .catch(function (error) {
+                    reject(error);
+                })
+        })
+    }
+
+    Comprobante.find({ 'org': org }).lean().exec((err, docs) => {
         if (err) { next(err) }
 
         const promises = [];
         docs.forEach((doc, i) => {
-            promises.push(syncRequest('http://localhost:3002/back/gps/' + doc.destino, req.token, i, 'destino'));
-            promises.push(syncRequest('https://users-ys4nimzqdq-uc.a.run.app/api/users/' + doc.user, req.token, i, 'user'));
+            promises.push(promesifyRequest('http://localhost:3002/back/gps/' + doc.destino, req.token, i, 'destino'));
+            promises.push(promesifyRequest('https://users-ys4nimzqdq-uc.a.run.app/api/users/' + doc.user, req.token, i, 'user'));
+            promises.push(generateReadSignedUrl(doc.archivo, i, 'archivo'));
         })
 
         Promise.all(promises)
