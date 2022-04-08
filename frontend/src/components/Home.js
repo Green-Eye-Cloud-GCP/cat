@@ -7,15 +7,22 @@ import { Trash, Pencil, Eye } from 'react-bootstrap-icons';
 const Home = () => {
 
     const [comprobantes, setComprobantes] = useState();
+    const [pageCount, setPageCount] = useState();
+    const [pages, setPages] = useState();
+    const [currentPage, setCurrentPage] = useState();
 
-    let active = 2;
-    const items = [];
-    for (let number = 1; number <= 5; number++) {
-        items.push(
-            <Pagination.Item key={number} active={number === active}>
-                {number}
-            </Pagination.Item>,
-        );
+    const handlePageChange = (pageNumber, pageCount) => {
+
+        const start = pageNumber > 3 ? pageNumber - 2 : 1;
+        const end = pageNumber + 2 - pageCount > 0 ? (pageNumber + 2) - (pageNumber + 2 - pageCount) : pageNumber + 2
+
+        const list = [];
+        for (let i = start; i <= end; i++) {
+            list.push(i);
+        }
+        setPages(list);
+        
+        setCurrentPage(pageNumber);
     }
 
     function TableContent(props) {
@@ -73,7 +80,22 @@ const Home = () => {
             .catch((error) => {
                 console.log(error);
             });
+
+        Axios.get('/api/comprobantes/pages', {
+            params: {
+                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g'
+            }
+        })
+            .then((response) => {
+                const pageCount = response.data.data;
+                setPageCount(pageCount);
+                handlePageChange(1, pageCount);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }, []);
+
 
     return (
         <Container className='bg-light border pt-5'>
@@ -105,7 +127,23 @@ const Home = () => {
             <Row>
                 <Col>
                     {
-                        comprobantes && <Pagination className='float-end'>{items}</Pagination>
+                        pages && <Pagination className='float-end'>
+                            <Pagination.Item disabled={currentPage === 1} onClick={() => { handlePageChange(currentPage - 1, pageCount) }}>
+                                {'<'}
+                            </Pagination.Item>
+                            {
+                                pages.map((pageNumber) => {
+                                    return (
+                                        <Pagination.Item key={'currentPage' + pageNumber} active={pageNumber === currentPage} onClick={() => handlePageChange(pageNumber, pageCount)}>
+                                            {pageNumber}
+                                        </Pagination.Item>
+                                    )
+                                })
+                            }
+                            <Pagination.Item disabled={currentPage === pageCount} onClick={() => { handlePageChange(currentPage + 1, pageCount) }}>
+                                {'>'}
+                            </Pagination.Item>
+                        </Pagination>
                     }
                 </Col>
             </Row>
