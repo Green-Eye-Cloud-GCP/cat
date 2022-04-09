@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Axios from 'axios';
+import axios from 'axios';
 import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import moment from 'moment';
 
 const Nuevo = () => {
 
@@ -37,7 +38,7 @@ const Nuevo = () => {
     }
 
     useEffect(() => {
-        Axios.get('http://localhost:3002/back/gps', {
+        axios.get('http://localhost:3002/back/gps', {
             params: {
                 org: 'adblick',
                 types: ['Deposito insumos', 'Campo', 'CAT']
@@ -64,11 +65,7 @@ const Nuevo = () => {
         }
 
         const formData = new FormData();
-
-        const fechaUTC = new Date(fecha)
-        const fechaLocal = new Date(fechaUTC.getUTCFullYear() + '-' + (fechaUTC.getUTCMonth() + 1) + '-' + fechaUTC.getUTCDate());
-
-        formData.append('fecha', fechaLocal);
+        formData.append('fecha', moment(fecha).format());
         formData.append('origenes', origenes);
         console.log(origenes);
         formData.append('destino', destino);
@@ -78,7 +75,7 @@ const Nuevo = () => {
         //TODO: eliminar
         formData.append('token', "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g");
 
-        Axios.post(
+        axios.post(
             '/api/comprobantes',
             formData
         )
