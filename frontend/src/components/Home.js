@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Table, Button, Row, Col, Pagination, Placeholder } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faEye, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faEye, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
 
@@ -42,7 +42,9 @@ const Home = () => {
                                         <Button variant='success'><FontAwesomeIcon icon={faEye} /></Button>
                                     </Col>
                                     <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
-                                        <Button disabled><FontAwesomeIcon icon={faPencil} /></Button>
+                                        <Link to={'/edit/' + comprobante._id}>
+                                            <Button><FontAwesomeIcon icon={faPencil} /></Button>
+                                        </Link>
                                     </Col>
                                     <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
                                         <Button variant='danger'><FontAwesomeIcon icon={faTrashCan} /></Button>
@@ -70,10 +72,11 @@ const Home = () => {
         axios.get('/api/comprobantes', {
             params: {
                 //TODO: eliminar
-                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g'
+                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
             }
         })
             .then((response) => {
+                console.log(response.data.data);
                 setComprobantes(response.data.data.map(comprobante => {
                     comprobante.fecha = new Date(comprobante.fecha);
                     return comprobante;
@@ -85,7 +88,7 @@ const Home = () => {
 
         axios.get('/api/comprobantes/pages', {
             params: {
-                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g'
+                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
             }
         })
             .then((response) => {
@@ -102,13 +105,13 @@ const Home = () => {
     return (
         <Container className='bg-light border pt-5'>
             <Row className='mb-3'>
-                <Link to='/nuevo'>
-                    <Button className='float-end' variant='primary'>Nuevo</Button>
+                <Link to='/new'>
+                    <Button className='float-end' variant='primary'>New</Button>
                 </Link>
             </Row>
             <Row>
                 <Col>
-                    <Table  bordered  responsive>
+                    <Table bordered responsive>
                         <thead>
                             <tr>
                                 <th>Fecha</th>

@@ -33,7 +33,7 @@ const Navigation = () => {
 
                         <Nav.Link
                             as={NavLink}
-                            to='/nuevo'
+                            to='/new'
                             onClick={() => setExpanded(false)}
                         >
                             Nuevo

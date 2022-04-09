@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
 import axios from 'axios';
 import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+
 import moment from 'moment';
 
-const Nuevo = () => {
+const CommonForm = forwardRef((props, ref) => {
 
     const [validated, setValidated] = useState(false);
     const [opcionesOrigenes, setOpcionesOrigenes] = useState([]);
@@ -15,6 +16,8 @@ const Nuevo = () => {
     const [origenes, setOrigenes] = useState(['']);
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
+    const [archivo, setArchivo] = useState();
+    const [id, setId] = useState();
 
     const fileInputRef = useRef();
 
@@ -37,11 +40,30 @@ const Nuevo = () => {
         ])
     }
 
+    useImperativeHandle(ref,
+        () => ({
+
+            setFormData(data) {
+                const origenes = data.origenes.map((origen) => origen._id);
+
+                setFecha(moment(data.fecha).format('YYYY-MM-DD'));
+                setOrigenes(origenes);
+                setDestino(data.destino._id);
+                setCantidad(data.cantidad);
+                setArchivo(data.archivo);
+                setId(data._id);
+            }
+
+        })
+    );
+
+
     useEffect(() => {
         axios.get('http://localhost:3002/back/gps', {
             params: {
                 org: 'adblick',
-                types: ['Deposito insumos', 'Campo', 'CAT']
+                types: ['Deposito insumos', 'Campo', 'CAT'],
+                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
             }
         })
             .then((response) => {
@@ -49,7 +71,7 @@ const Nuevo = () => {
                 setOpcionesDestinos(response.data.filter(opcion => opcion.type === 'CAT'));
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     }, []);
 
@@ -67,20 +89,19 @@ const Nuevo = () => {
         const formData = new FormData();
         formData.append('fecha', moment(fecha).format());
         formData.append('origenes', origenes);
-        console.log(origenes);
         formData.append('destino', destino);
         formData.append('cantidad', cantidad);
         formData.append('file', fileInputRef.current.files[0]);
 
         //TODO: eliminar
-        formData.append('token', "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk0MTg0NTgsImV4cCI6MTY0OTUwNDg1OH0.IRn3AFdWt4SNMRLpEvBQXhgXCU0p9IXrc9lJHkbSlGhetn_junUckx41NNiBbIcIn_k5K1S-odquQF0CSKdN8g");
+        formData.append('token', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw');
 
-        axios.post(
-            '/api/comprobantes',
-            formData
-        )
+        axios({
+            url: props.mode === 'Nuevo' ? '/api/comprobantes' : '/api/comprobantes/' + id,
+            method: props.mode === 'Nuevo' ? 'POST' : 'PUT',
+            data: formData
+        })
             .then((response) => {
-                console.log(response.data);
                 setFecha('');
                 setOrigenes(['']);
                 setDestino('');
@@ -88,14 +109,14 @@ const Nuevo = () => {
                 fileInputRef.current.value = '';
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     };
 
     return (
         <Container className='bg-light border py-3'>
 
-            <h1 className='text-center'>Nuevo comprobante</h1>
+            <h1 className='text-center'>{props.mode} comprobante</h1>
 
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group className='my-3' controlId='formFecha'>
@@ -202,20 +223,32 @@ const Nuevo = () => {
 
                 <Form.Group className='my-3' controlId='formArchivo'>
                     <Form.Label><h5>PDF/Imagen</h5></Form.Label>
+                    {
+                        archivo && (
+                            <div className='mb-3'>
+                                <a
+                                    href={archivo.url}
+                                    target="_blank"
+                                    rel="noreferrer noopener">
+                                    {archivo.fileName}
+                                </a>
+                            </div>
+                        )
+                    }
                     <Form.Control
                         type='file'
                         ref={fileInputRef}
-                        required
+                        required={props.mode === 'Nuevo'}
                     />
                 </Form.Group>
 
 
                 <Row className='mt-5'>
-                    <Col><Button className='float-end' variant='primary' type='submit'>Guardar</Button></Col>
+                    <Col><Button className='float-end' variant='primary' type='submit'>{props.mode}</Button></Col>
                 </Row>
             </Form>
         </Container>
     )
-}
+});
 
-export default Nuevo;
+export default CommonForm;

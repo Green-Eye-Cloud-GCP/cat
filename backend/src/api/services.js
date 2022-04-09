@@ -31,7 +31,11 @@ const generateReadSignedUrl = function (fileName, i, key) {
         const blob = bucket.file(fileName);
         blob.getSignedUrl(options)
             .then(function (response) {
-                resolve([response, i, key]);
+                const data = {
+                    'url': response[0],
+                    'fileName': fileName
+                }
+                resolve([data, i, key]);
             })
             .catch(function (err) {
                 reject(err);
