@@ -5,32 +5,25 @@ import { Container, Table, Button, Row, Col, Pagination, Placeholder } from 'rea
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faEye, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
+import DeleteModal from './DeleteModal';
+
 const Home = () => {
 
     const [comprobantes, setComprobantes] = useState();
     const [pageCount, setPageCount] = useState();
-    const [pages, setPages] = useState();
-    const [currentPage, setCurrentPage] = useState();
+    const [pageList, setPageList] = useState();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    const handlePageChange = (pageNumber, pageCount) => {
+    const handlePageChange = (pageNumber) => {
 
-        const start = pageNumber > 3 ? pageNumber - 2 : 1;
-        const end = pageNumber + 2 - pageCount > 0 ? (pageNumber + 2) - (pageNumber + 2 - pageCount) : pageNumber + 2
+        if (pageCount === null) { return }
 
-        const list = [];
-        for (let i = start; i <= end; i++) {
-            list.push(i);
-        }
-        setPages(list);
-
-        setCurrentPage(pageNumber);
-    }
-
-    useEffect(() => {
+        setComprobantes();
         axios.get('/api/comprobantes', {
             params: {
-                //TODO: eliminar
-                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
+                page: pageNumber,
+                token: process.env.REACT_APP_TOKEN
             }
         })
             .then((response) => {
@@ -44,21 +37,59 @@ const Home = () => {
                 console.log(error);
             });
 
-        axios.get('/api/comprobantes/pages', {
+        const start = pageNumber > 3 ? pageNumber - 2 : 1;
+        const end = pageNumber + 2 - pageCount > 0 ? (pageNumber + 2) - (pageNumber + 2 - pageCount) : pageNumber + 2
+
+        const list = [];
+        for (let i = start; i <= end; i++) {
+            list.push(i);
+        }
+        setPageList(list);
+
+        setCurrentPage(pageNumber);
+    }
+
+    const handleDelete = (id) => {
+        axios.delete('/api/comprobantes/' + id, {
             params: {
-                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
+                token: process.env.REACT_APP_TOKEN
             }
         })
             .then((response) => {
-                const pageCount = response.data.data;
-                setPageCount(pageCount);
-                handlePageChange(1, pageCount);
+                console.log(response.data.data);
+                setShowDeleteModal(false);
+                setPageCount();
+                loadData();
             })
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
 
+    }
+
+    useEffect(() => {
+        handlePageChange(1);
+    }, [pageCount]);
+
+    const loadData = () => {
+        axios.get('/api/comprobantes/pages', {
+            params: {
+                token: process.env.REACT_APP_TOKEN
+            }
+        })
+            .then((response) => {
+                const pageCount = response.data.data;
+                console.log(pageCount);
+                setPageCount(pageCount);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
     return (
         <Container className='bg-light border pt-5'>
@@ -105,7 +136,8 @@ const Home = () => {
                                                                 </Link>
                                                             </Col>
                                                             <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
-                                                                <Button variant='danger'><FontAwesomeIcon icon={faTrashCan} /></Button>
+                                                                <Button variant='danger' onClick={() => setShowDeleteModal(true)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                                                                <DeleteModal show={showDeleteModal} onClose={() => { setShowDeleteModal(false) }} onDelete={()=> handleDelete(comprobante._id)} />
                                                             </Col>
                                                         </Row>
                                                     </Container>
@@ -131,12 +163,12 @@ const Home = () => {
             <Row>
                 <Col>
                     {
-                        pages && <Pagination className='float-end'>
+                        pageList && comprobantes && <Pagination className='float-end'>
                             <Pagination.Item disabled={currentPage === 1} onClick={() => { handlePageChange(currentPage - 1, pageCount) }}>
                                 {'<'}
                             </Pagination.Item>
                             {
-                                pages.map((pageNumber) => {
+                                pageList.map((pageNumber) => {
                                     return (
                                         <Pagination.Item key={'currentPage' + pageNumber} active={pageNumber === currentPage} onClick={() => handlePageChange(pageNumber, pageCount)}>
                                             {pageNumber}

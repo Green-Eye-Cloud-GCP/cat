@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Container, Placeholder, Row, Button, Col } from 'react-bootstrap';
+import { Container, Placeholder, Row, Button, Table } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -18,7 +18,7 @@ const View = () => {
     useEffect(() => {
         axios.get('/api/comprobantes/' + id, {
             params: {
-                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
+                token: process.env.REACT_APP_TOKEN
             }
         })
             .then((response) => {
@@ -45,88 +45,94 @@ const View = () => {
                 </Link>
             </Row>
 
-            <Row className='border p-3 my-3'>
-                <h5>Fecha</h5>
-                <div className='px-4'>
-                    {
-                        !dataLoaded
-                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
-                            : <div>{fecha}</div>
+            <Table bordered responsive>
+                <tbody>
+                    <tr>
+                        <td style={{'width': '30%'}}><b>Fecha</b></td>
+                        <td>
+                            {
+                                !dataLoaded
+                                    ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    : <>{fecha}</>
 
-                    }
-                </div>
-            </Row>
+                            }
+                        </td>
+                    </tr>
 
-            <Row className='border p-3 my-3'>
-                <h5>Origenes</h5>
-                {
-                    !dataLoaded
-                        ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
-                        : <div>
-                            <ul>
-                                {
-                                    origenes.map((origen, i) => {
-                                        return (
-                                            <li key={i}>{origen}</li>
-                                        )
-                                    })
-                                }
-                            </ul>
-                        </div>
-                }
-            </Row>
+                    <tr>
+                        <td><b>Origenes</b></td>
+                        <td>
+                            {
+                                !dataLoaded
+                                    ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    : <>
+                                        {
+                                            origenes.map((origen, i) => {
+                                                return (
+                                                    <span key={i}>{origen}<br /></span>
+                                                )
+                                            })
+                                        }
+                                    </>
 
-            <Row className='border p-3 my-3'>
-                <h5>CAT destino</h5>
-                <div className='px-4'>
-                    {
-                        !dataLoaded
-                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
-                            : <div>{destino}</div>
+                            }
+                        </td>
+                    </tr>
 
-                    }
-                </div>
-            </Row>
+                    <tr>
+                        <td><b>CAT destino</b></td>
+                        <td>
+                            {
+                                !dataLoaded
+                                    ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    : <>{destino}</>
+                            }
+                        </td>
+                    </tr>
 
-            <Row className='border p-3 my-3'>
-                <h5>Cantidad</h5>
-                <div className='px-4'>
-                    {
-                        !dataLoaded
-                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
-                            : <div>{cantidad}</div>
+                    <tr>
+                        <td><b>Cantidad</b></td>
+                        <td>
+                            {
+                                !dataLoaded
+                                    ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    : <>{cantidad}</>
 
-                    }
-                </div>
-            </Row>
+                            }
+                        </td>
+                    </tr>
 
-            <Row className='border p-3 my-3'>
-                <h5>PDF/Imagen</h5>
-                {
-                    !dataLoaded
-                        ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
-                        : <div>
-                            <a
-                                href={archivo.url}
-                                target='_blank'
-                                rel='noreferrer noopener'
-                            >
-                                {archivo.fileName}
-                            </a>
-                        </div>
+                    <tr>
+                        <td><b>PDF/Imagen</b></td>
+                        <td>
+                            {
+                                !dataLoaded
+                                    ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    : <a
+                                        href={archivo.url}
+                                        target='_blank'
+                                        rel='noreferrer noopener'
+                                    >
+                                        {archivo.fileName}
+                                    </a>
 
-                }
-            </Row>
+                            }
+                        </td>
+                    </tr>
 
-            <Row className='border p-3 my-3'>
-                <h5>Usuario</h5>
-                {
-                    !dataLoaded
-                        ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
-                        : <div>{user}</div>
+                    <tr>
+                        <td><b>Usuario</b></td>
+                        <td>
+                            {
+                                !dataLoaded
+                                    ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    : <>{user}</>
 
-                }
-            </Row>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </Table>
         </Container>
     )
 }

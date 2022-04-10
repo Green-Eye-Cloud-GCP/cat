@@ -29,13 +29,13 @@ const CommonForm = forwardRef((props, ref) => {
         setOrigenes(list);
     };
 
-    const delOrigen = (index) => {
+    const handleDelOrigen = (index) => {
         const list = [...origenes];
         list.splice(index, 1);
         setOrigenes(list)
     }
 
-    const addOrigen = () => {
+    const handleAddOrigen = () => {
         setOrigenes([
             ...origenes,
             ''
@@ -66,7 +66,7 @@ const CommonForm = forwardRef((props, ref) => {
             params: {
                 org: 'adblick',
                 types: ['Deposito insumos', 'Campo', 'CAT'],
-                token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw'
+                token: process.env.REACT_APP_TOKEN
             }
         })
             .then((response) => {
@@ -97,7 +97,7 @@ const CommonForm = forwardRef((props, ref) => {
         formData.append('file', fileInputRef.current.files[0]);
 
         //TODO: eliminar
-        formData.append('token', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjIwYTNiYjczMzlhNGY3ZDY1M2FmNTkiLCJvcmciOiJhZGJsaWNrIiwicm9sZXMiOlsiY3Vwb3MuZGVhbGVyIiwiY2F0LmVkaXRvciJdLCJpYXQiOjE2NDk1MjQ1NTMsImV4cCI6MTY0OTYxMDk1M30.GQq2AnCwCJ1k949ahtQnov9iGonRV2C_SoGvOS9z86sRllGbrY9N1FSXHcEHi5qhCR0QsnvaAsplx8QJH1HaNw');
+        formData.append('token', process.env.REACT_APP_TOKEN);
 
         axios({
             url: props.mode === 'Nuevo' ? '/api/comprobantes' : '/api/comprobantes/' + id,
@@ -153,8 +153,8 @@ const CommonForm = forwardRef((props, ref) => {
                                         {
                                             origenes.map((origen, i) => {
                                                 return (
-                                                    <Container>
-                                                        <Row key={i} className='my-3'>
+                                                    <Container key={i}>
+                                                        <Row className='my-3'>
                                                             <Col>
                                                                 <Form.Select
                                                                     value={origen}
@@ -180,7 +180,7 @@ const CommonForm = forwardRef((props, ref) => {
                                                                             </Tooltip>
                                                                         }
                                                                     >
-                                                                        <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
+                                                                        <Button className='float-end' variant='danger' onClick={() => handleDelOrigen(i)}>
                                                                             <FontAwesomeIcon icon={faTrashCan} />
                                                                         </Button>
                                                                     </OverlayTrigger>
@@ -203,7 +203,7 @@ const CommonForm = forwardRef((props, ref) => {
                                                     </Tooltip>
                                                 }
                                             >
-                                                <Button className='float-end' variant='success' onClick={addOrigen}>
+                                                <Button className='float-end' variant='success' onClick={handleAddOrigen}>
                                                     <FontAwesomeIcon icon={faPlus} />
                                                 </Button>
                                             </OverlayTrigger>

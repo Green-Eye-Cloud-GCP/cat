@@ -4,7 +4,7 @@ const services = require('../services');
 
 const Comprobante = mongoose.model('Comprobante');
 
-const pageSize = 2;
+const pageSize = 1;
 
 const newComprobante = async function (req, res, next) {
 
@@ -47,10 +47,10 @@ const getComprobantes = function (req, res, next) {
 
     const { org } = req.user;
     const token = req.token;
-    const { page = 0 } = req.query;
+    const { page = 1 } = req.query;
 
     Comprobante.find({ 'org': org })
-        .skip(page * pageSize)
+        .skip((page - 1) * pageSize)
         .limit(pageSize)
         .select(['fecha', 'user', 'destino', 'cantidad', 'origenes'])
         .lean()
