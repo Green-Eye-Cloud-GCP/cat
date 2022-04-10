@@ -5,6 +5,7 @@ import Navigation from './components/Navigation';
 import Home from './components/Home';
 import New from './components/New';
 import Edit from './components/Edit';
+import View from './components/View';
 
 const App = () => {
     return (
@@ -12,7 +13,7 @@ const App = () => {
             <Navigation />
             <Routes>
                 <Route path='/new' element={<New />} />
-                <Route path='/view/:id' element={<New />} />
+                <Route path='/view/:id' element={<View />} />
                 <Route path='/edit/:id' element={<Edit />} />
                 <Route path='*' element={<Home />} />
             </Routes>

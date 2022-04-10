@@ -4,7 +4,7 @@ const services = require('../services');
 
 const Comprobante = mongoose.model('Comprobante');
 
-const pageSize = 10;
+const pageSize = 2;
 
 const newComprobante = async function (req, res, next) {
 
@@ -52,15 +52,15 @@ const getComprobantes = function (req, res, next) {
     Comprobante.find({ 'org': org })
         .skip(page * pageSize)
         .limit(pageSize)
-        .select(['fecha', 'user', 'destino', 'cantidad'])
+        .select(['fecha', 'user', 'destino', 'cantidad', 'origenes'])
         .lean()
         .exec((err, docs) => {
             if (err) { return next(err) }
 
             const promises = [];
             docs.forEach((doc, i) => {
-                promises.push(services.promesifyRequest('http://localhost:3002/back/gps/' + doc.destino, token, i, 'destino'));
-                promises.push(services.promesifyRequest('http://localhost:3003/api/users/' + doc.user, token, i, 'user'));
+                promises.push(services.promesifyRequest('https://www.greeneye.cloud/back/gps/' + doc.destino, token, i, 'destino'));
+                promises.push(services.promesifyRequest('https://users-ys4nimzqdq-uc.a.run.app/api/users/' + doc.user, token, i, 'user'));
             })
 
             Promise.all(promises)
@@ -99,10 +99,10 @@ const getComprobante = function (req, res, next) {
         if (doc) {
             const promises = [];
             doc.origenes.forEach((origen, i) => {
-                promises.push(services.promesifyRequest('http://localhost:3002/back/gps/' + origen, token, i, 'origenes'));
+                promises.push(services.promesifyRequest('https://www.greeneye.cloud/back/gps/' + origen, token, i, 'origenes'));
             })
-            promises.push(services.promesifyRequest('http://localhost:3002/back/gps/' + doc.destino, token, null, 'destino'));
-            promises.push(services.promesifyRequest('http://localhost:3003/api/users/' + doc.user, token, null, 'user'));
+            promises.push(services.promesifyRequest('https://www.greeneye.cloud/back/gps/' + doc.destino, token, null, 'destino'));
+            promises.push(services.promesifyRequest('https://users-ys4nimzqdq-uc.a.run.app/api/users/' + doc.user, token, null, 'user'));
             promises.push(services.generateReadSignedUrl(doc.archivo, null, 'archivo'));
 
             Promise.all(promises)

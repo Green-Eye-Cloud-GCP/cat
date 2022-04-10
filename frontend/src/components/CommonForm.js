@@ -1,9 +1,9 @@
 import React, { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip, Placeholder } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-
 import moment from 'moment';
 
 const CommonForm = forwardRef((props, ref) => {
@@ -16,10 +16,12 @@ const CommonForm = forwardRef((props, ref) => {
     const [origenes, setOrigenes] = useState(['']);
     const [destino, setDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
-    const [archivo, setArchivo] = useState();
+    const [archivo, setArchivo] = useState({ url: '', fileName: '' });
     const [id, setId] = useState();
+    const [dataLoaded, setDataLoaded] = useState(false);
 
     const fileInputRef = useRef();
+    const navigate = useNavigate();
 
     const handleSelectChange = (value, index) => {
         const list = [...origenes];
@@ -52,6 +54,7 @@ const CommonForm = forwardRef((props, ref) => {
                 setCantidad(data.cantidad);
                 setArchivo(data.archivo);
                 setId(data._id);
+                setDataLoaded(true);
             }
 
         })
@@ -59,7 +62,7 @@ const CommonForm = forwardRef((props, ref) => {
 
 
     useEffect(() => {
-        axios.get('http://localhost:3002/back/gps', {
+        axios.get('https://www.greeneye.cloud/back/gps', {
             params: {
                 org: 'adblick',
                 types: ['Deposito insumos', 'Campo', 'CAT'],
@@ -102,11 +105,15 @@ const CommonForm = forwardRef((props, ref) => {
             data: formData
         })
             .then((response) => {
-                setFecha('');
-                setOrigenes(['']);
-                setDestino('');
-                setCantidad('');
-                fileInputRef.current.value = '';
+                if (props.mode === 'Editar') {
+                    navigate('/');
+                } else {
+                    setFecha('');
+                    setOrigenes(['']);
+                    setDestino('');
+                    setCantidad('');
+                    fileInputRef.current.value = '';
+                }
             })
             .catch((error) => {
                 console.error(error);
@@ -121,118 +128,152 @@ const CommonForm = forwardRef((props, ref) => {
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group className='my-3' controlId='formFecha'>
                     <Form.Label><h5>Fecha</h5></Form.Label>
-                    <Form.Control
-                        type='date'
-                        value={fecha}
-                        onChange={(e) => setFecha(e.target.value)}
-                        required
-                    />
+                    {
+                        props.mode === 'Editar' && !dataLoaded
+                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                            : (
+                                <Form.Control
+                                    type='date'
+                                    value={fecha}
+                                    onChange={(e) => setFecha(e.target.value)}
+                                    required
+                                />
+                            )
+                    }
                 </Form.Group>
 
                 <Container className='border py-3'>
                     <h5>Origenes</h5>
-
-
-                    <Form.Group className='my-3' controlId='formOrigenes'>
-                        {
-                            origenes.map((origen, i) => {
-                                return (
-                                    <Row key={i} className='my-3'>
-                                        <Col>
-                                            <Form.Select
-                                                value={origen}
-                                                onChange={(e) => handleSelectChange(e.target.value, i)}
-                                                required
-                                            >
-                                                <option value=''>Seleccione un origen</option>
-                                                {
-                                                    opcionesOrigenes.map((opcion) => {
-                                                        return <option key={opcion._id} value={opcion._id}>{opcion.name}</option>
-                                                    })
-                                                }
-                                            </Form.Select>
-                                        </Col>
+                    {
+                        props.mode === 'Editar' && !dataLoaded
+                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                            : (
+                                <Container>
+                                    <Form.Group className='my-3' controlId='formOrigenes'>
                                         {
-                                            i > 0 &&
-                                            <Col xs={'auto'}>
-                                                <OverlayTrigger
-                                                    placement='right'
-                                                    overlay={
-                                                        <Tooltip>
-                                                            Eliminar origen
-                                                        </Tooltip>
-                                                    }
-                                                >
-                                                    <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
-                                                        <FontAwesomeIcon icon={faTrashCan} />
-                                                    </Button>
-                                                </OverlayTrigger>
-                                            </Col>
+                                            origenes.map((origen, i) => {
+                                                return (
+                                                    <Container>
+                                                        <Row key={i} className='my-3'>
+                                                            <Col>
+                                                                <Form.Select
+                                                                    value={origen}
+                                                                    onChange={(e) => handleSelectChange(e.target.value, i)}
+                                                                    required
+                                                                >
+                                                                    <option value=''>Seleccione un origen</option>
+                                                                    {
+                                                                        opcionesOrigenes.map((opcion) => {
+                                                                            return <option key={opcion._id} value={opcion._id}>{opcion.name}</option>
+                                                                        })
+                                                                    }
+                                                                </Form.Select>
+                                                            </Col>
+                                                            {
+                                                                i > 0 &&
+                                                                <Col xs={'auto'}>
+                                                                    <OverlayTrigger
+                                                                        placement='right'
+                                                                        overlay={
+                                                                            <Tooltip>
+                                                                                Eliminar origen
+                                                                            </Tooltip>
+                                                                        }
+                                                                    >
+                                                                        <Button className='float-end' variant='danger' onClick={() => delOrigen(i)}>
+                                                                            <FontAwesomeIcon icon={faTrashCan} />
+                                                                        </Button>
+                                                                    </OverlayTrigger>
+                                                                </Col>
+                                                            }
+                                                        </Row>
+                                                    </Container>
+                                                )
+                                            })
                                         }
+                                    </Form.Group>
+
+                                    <Row>
+                                        <Col>
+                                            <OverlayTrigger
+                                                placement='right'
+                                                overlay={
+                                                    <Tooltip>
+                                                        Agregar origen
+                                                    </Tooltip>
+                                                }
+                                            >
+                                                <Button className='float-end' variant='success' onClick={addOrigen}>
+                                                    <FontAwesomeIcon icon={faPlus} />
+                                                </Button>
+                                            </OverlayTrigger>
+                                        </Col>
                                     </Row>
-                                )
-                            })
-                        }
-                    </Form.Group>
-
-                    <Row>
-                        <Col>
-                            <OverlayTrigger
-                                placement='right'
-                                overlay={
-                                    <Tooltip>
-                                        Agregar origen
-                                    </Tooltip>
-                                }
-                            >
-                                <Button className='float-end' variant='success' onClick={addOrigen}>
-                                    <FontAwesomeIcon icon={faPlus} />
-                                </Button>
-                            </OverlayTrigger>
-                        </Col>
-                    </Row>
-
+                                </Container>
+                            )
+                    }
                 </Container>
 
                 <Form.Group className='my-3' controlId='formDestinos'>
                     <Form.Label><h5>CAT destino</h5></Form.Label>
-                    <Form.Select
-                        value={destino}
-                        onChange={(e) => setDestino(e.target.value)}
-                        required
-                    >
-                        <option value=''>Seleccione un destino</option>
-                        {
-                            opcionesDestinos.map((opcion) => {
-                                return <option key={opcion._id} value={opcion._id}>{opcion.name}</option>
-                            })
-                        }
-                    </Form.Select>
+                    {
+                        props.mode === 'Editar' && !dataLoaded
+                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                            : (
+                                <Form.Select
+                                    value={destino}
+                                    onChange={(e) => setDestino(e.target.value)}
+                                    required
+                                >
+                                    <option value=''>Seleccione un destino</option>
+                                    {
+                                        opcionesDestinos.map((opcion) => {
+                                            return <option key={opcion._id} value={opcion._id}>{opcion.name}</option>
+                                        })
+                                    }
+                                </Form.Select>
+                            )
+                    }
                 </Form.Group>
 
 
                 <Form.Group className='my-3' controlId='formCantidad'>
                     <Form.Label><h5>Cantidad</h5></Form.Label>
-                    <Form.Control
-                        type='number'
-                        value={cantidad}
-                        onChange={(e) => setCantidad(e.target.value)}
-                        required
-                    />
+                    {
+                        props.mode === 'Editar' && !dataLoaded
+                            ? <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                            : (
+                                <Form.Control
+                                    type='number'
+                                    value={cantidad}
+                                    onChange={(e) => setCantidad(e.target.value)}
+                                    required
+                                />
+                            )
+                    }
                 </Form.Group>
 
                 <Form.Group className='my-3' controlId='formArchivo'>
                     <Form.Label><h5>PDF/Imagen</h5></Form.Label>
                     {
-                        archivo && (
-                            <div className='mb-3'>
-                                <a
-                                    href={archivo.url}
-                                    target="_blank"
-                                    rel="noreferrer noopener">
-                                    {archivo.fileName}
-                                </a>
-                            </div>
+                        props.mode === 'Editar' && (
+                            !dataLoaded
+                                ? (
+                                    <div className='mb-3'>
+                                        <Placeholder animation='glow'><Placeholder size='lg' className='w-100' /></Placeholder>
+                                    </div>
+                                )
+                                : (
+                                    <div className='mb-3'>
+                                        <a
+                                            href={archivo.url}
+                                            target='_blank'
+                                            rel='noreferrer noopener'
+                                        >
+                                            {archivo.fileName}
+                                        </a>
+                                    </div>
+                                )
                         )
                     }
                     <Form.Control
@@ -243,9 +284,15 @@ const CommonForm = forwardRef((props, ref) => {
                 </Form.Group>
 
 
-                <Row className='mt-5'>
-                    <Col><Button className='float-end' variant='primary' type='submit'>{props.mode}</Button></Col>
-                </Row>
+                {
+                    props.mode === 'Editar' && !dataLoaded
+                        ? <></>
+                        : (
+                            <Row className='mt-5'>
+                                <Col><Button className='float-end' variant='primary' type='submit'>{props.mode}</Button></Col>
+                            </Row>
+                        )
+                }
             </Form>
         </Container>
     )

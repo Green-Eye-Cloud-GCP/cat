@@ -26,48 +26,6 @@ const Home = () => {
         setCurrentPage(pageNumber);
     }
 
-    function TableContent(props) {
-        if (comprobantes) {
-            return comprobantes.map((comprobante, i) => {
-                return (
-                    <tr key={'row' + i}>
-                        <td>{comprobante.fecha.toLocaleDateString()}</td>
-                        <td>{comprobante.destino.name}</td>
-                        <td>{comprobante.cantidad}</td>
-                        <td>{comprobante.user.name}</td>
-                        <td>
-                            <Container>
-                                <Row>
-                                    <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
-                                        <Button variant='success'><FontAwesomeIcon icon={faEye} /></Button>
-                                    </Col>
-                                    <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
-                                        <Link to={'/edit/' + comprobante._id}>
-                                            <Button><FontAwesomeIcon icon={faPencil} /></Button>
-                                        </Link>
-                                    </Col>
-                                    <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
-                                        <Button variant='danger'><FontAwesomeIcon icon={faTrashCan} /></Button>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </td>
-                    </tr >
-                )
-            })
-        }
-
-        return (
-            <tr>
-                <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
-                <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
-                <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
-                <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
-                <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
-            </tr>
-        )
-    }
-
     useEffect(() => {
         axios.get('/api/comprobantes', {
             params: {
@@ -106,7 +64,7 @@ const Home = () => {
         <Container className='bg-light border pt-5'>
             <Row className='mb-3'>
                 <Link to='/new'>
-                    <Button className='float-end' variant='primary'>New</Button>
+                    <Button className='float-end' variant='primary'>Nuevo</Button>
                 </Link>
             </Row>
             <Row>
@@ -115,6 +73,7 @@ const Home = () => {
                         <thead>
                             <tr>
                                 <th>Fecha</th>
+                                <th>Origenes</th>
                                 <th>Destino</th>
                                 <th>Cantidad</th>
                                 <th>Usuario</th>
@@ -122,7 +81,49 @@ const Home = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <TableContent />
+                            {
+                                comprobantes
+                                    ? comprobantes.map((comprobante, i) => {
+                                        return (
+                                            <tr key={'row' + i}>
+                                                <td>{comprobante.fecha.toLocaleDateString()}</td>
+                                                <td>{comprobante.origenes.length}</td>
+                                                <td>{comprobante.destino.name}</td>
+                                                <td>{comprobante.cantidad}</td>
+                                                <td>{comprobante.user.name}</td>
+                                                <td>
+                                                    <Container>
+                                                        <Row>
+                                                            <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
+                                                                <Link to={'/view/' + comprobante._id}>
+                                                                    <Button variant='success'><FontAwesomeIcon icon={faEye} /></Button>
+                                                                </Link>
+                                                            </Col>
+                                                            <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
+                                                                <Link to={'/edit/' + comprobante._id}>
+                                                                    <Button><FontAwesomeIcon icon={faPencil} /></Button>
+                                                                </Link>
+                                                            </Col>
+                                                            <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
+                                                                <Button variant='danger'><FontAwesomeIcon icon={faTrashCan} /></Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                </td>
+                                            </tr >
+                                        )
+                                    })
+                                    : (
+                                        <tr>
+                                            <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
+                                            <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
+                                            <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
+                                            <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
+                                            <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
+                                            <td><Placeholder animation='glow'><Placeholder className='w-100' /></Placeholder></td>
+                                        </tr>
+                                    )
+                            }
                         </tbody>
                     </Table>
                 </Col>
