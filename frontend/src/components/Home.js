@@ -9,45 +9,11 @@ import DeleteModal from './DeleteModal';
 
 const Home = () => {
 
-    const [comprobantes, setComprobantes] = useState();
-    const [pageCount, setPageCount] = useState();
+    const [comprobantes, setComprobantes] = useState([]);
+    const [pageCount, setPageCount] = useState(0);
     const [pageList, setPageList] = useState();
     const [currentPage, setCurrentPage] = useState(1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-    const handlePageChange = (pageNumber) => {
-
-        if (pageCount === null) { return }
-
-        setComprobantes();
-        axios.get('/api/comprobantes', {
-            params: {
-                page: pageNumber,
-                token: process.env.REACT_APP_TOKEN
-            }
-        })
-            .then((response) => {
-                console.log(response.data.data);
-                setComprobantes(response.data.data.map(comprobante => {
-                    comprobante.fecha = new Date(comprobante.fecha);
-                    return comprobante;
-                }));
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-        const start = pageNumber > 3 ? pageNumber - 2 : 1;
-        const end = pageNumber + 2 - pageCount > 0 ? (pageNumber + 2) - (pageNumber + 2 - pageCount) : pageNumber + 2
-
-        const list = [];
-        for (let i = start; i <= end; i++) {
-            list.push(i);
-        }
-        setPageList(list);
-
-        setCurrentPage(pageNumber);
-    }
 
     const handleDelete = (id) => {
         axios.delete('/api/comprobantes/' + id, {
@@ -64,12 +30,38 @@ const Home = () => {
             .catch((error) => {
                 console.log(error);
             });
-
     }
 
     useEffect(() => {
-        handlePageChange(1);
-    }, [pageCount]);
+        if (!pageCount) { return }
+
+        setComprobantes();
+        axios.get('/api/comprobantes', {
+            params: {
+                page: currentPage,
+                token: process.env.REACT_APP_TOKEN
+            }
+        })
+            .then((response) => {
+                console.log(response.data.data);
+                setComprobantes(response.data.data.map(comprobante => {
+                    comprobante.fecha = new Date(comprobante.fecha);
+                    return comprobante;
+                }));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        const start = currentPage > 3 ? currentPage - 2 : 1;
+        const end = currentPage + 2 - pageCount > 0 ? (currentPage + 2) - (currentPage + 2 - pageCount) : currentPage + 2
+        const list = [];
+        for (let i = start; i <= end; i++) {
+            list.push(i);
+        }
+        setPageList(list);
+
+    }, [currentPage, pageCount]);
 
     const loadData = () => {
         axios.get('/api/comprobantes/pages', {
@@ -164,19 +156,19 @@ const Home = () => {
                 <Col>
                     {
                         pageList && comprobantes && <Pagination className='float-end'>
-                            <Pagination.Item disabled={currentPage === 1} onClick={() => { handlePageChange(currentPage - 1, pageCount) }}>
+                            <Pagination.Item disabled={currentPage === 1} onClick={() => { setCurrentPage(currentPage - 1) }}>
                                 {'<'}
                             </Pagination.Item>
                             {
                                 pageList.map((pageNumber) => {
                                     return (
-                                        <Pagination.Item key={'currentPage' + pageNumber} active={pageNumber === currentPage} onClick={() => handlePageChange(pageNumber, pageCount)}>
+                                        <Pagination.Item key={'currentPage' + pageNumber} active={pageNumber === currentPage} onClick={() => setCurrentPage(pageNumber)}>
                                             {pageNumber}
                                         </Pagination.Item>
                                     )
                                 })
                             }
-                            <Pagination.Item disabled={currentPage === pageCount} onClick={() => { handlePageChange(currentPage + 1, pageCount) }}>
+                            <Pagination.Item disabled={currentPage === pageCount} onClick={() => { setCurrentPage(currentPage + 1) }}>
                                 {'>'}
                             </Pagination.Item>
                         </Pagination>
