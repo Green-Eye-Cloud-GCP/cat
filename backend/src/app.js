@@ -32,3 +32,7 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
+
+//TODO: elimianar token
+//TODO: Cannot GET /view/6253848439369a532a751902
+//TODO: eliminar console.log
