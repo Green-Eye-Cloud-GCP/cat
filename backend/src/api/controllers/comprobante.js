@@ -4,7 +4,7 @@ const services = require('../services');
 
 const Comprobante = mongoose.model('Comprobante');
 
-const pageSize = 1;
+const pageSize = 10;
 
 const newComprobante = async function (req, res, next) {
 

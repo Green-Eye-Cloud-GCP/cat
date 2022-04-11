@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip, Placeholder } from 'react-bootstrap';
+import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip, Placeholder, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
@@ -9,6 +9,8 @@ import moment from 'moment';
 const CommonForm = forwardRef((props, ref) => {
 
     const [validated, setValidated] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+
     const [opcionesOrigenes, setOpcionesOrigenes] = useState([]);
     const [opcionesDestinos, setOpcionesDestinos] = useState([]);
 
@@ -40,6 +42,14 @@ const CommonForm = forwardRef((props, ref) => {
             ...origenes,
             ''
         ])
+    }
+
+    const handleSuccess = () => {
+        setShowSuccess(true);
+        setTimeout(
+            () => setShowSuccess(false),
+            3000
+        );
     }
 
     useImperativeHandle(ref,
@@ -108,6 +118,7 @@ const CommonForm = forwardRef((props, ref) => {
                 if (props.mode === 'Editar') {
                     navigate('/');
                 } else {
+                    handleSuccess();
                     setFecha('');
                     setOrigenes(['']);
                     setDestino('');
@@ -122,6 +133,10 @@ const CommonForm = forwardRef((props, ref) => {
 
     return (
         <Container className='bg-light border py-3'>
+
+            <Alert show={showSuccess} variant="success" onClose={() => setShowSuccess(false)} dismissible>
+                <Alert.Heading>Comprobante creado!</Alert.Heading>
+            </Alert>
 
             <h1 className='text-center'>{props.mode} comprobante</h1>
 

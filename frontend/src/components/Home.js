@@ -9,8 +9,8 @@ import DeleteModal from './DeleteModal';
 
 const Home = () => {
 
-    const [comprobantes, setComprobantes] = useState([]);
-    const [pageCount, setPageCount] = useState(0);
+    const [comprobantes, setComprobantes] = useState();
+    const [pageCount, setPageCount] = useState();
     const [pageList, setPageList] = useState();
     const [currentPage, setCurrentPage] = useState(1);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -25,6 +25,7 @@ const Home = () => {
                 console.log(response.data.data);
                 setShowDeleteModal(false);
                 setPageCount();
+                setCurrentPage(1);
                 loadData();
             })
             .catch((error) => {
@@ -33,9 +34,12 @@ const Home = () => {
     }
 
     useEffect(() => {
-        if (!pageCount) { return }
 
         setComprobantes();
+        setPageList();
+
+        if (pageCount === undefined) { return }
+
         axios.get('/api/comprobantes', {
             params: {
                 page: currentPage,
@@ -48,19 +52,18 @@ const Home = () => {
                     comprobante.fecha = new Date(comprobante.fecha);
                     return comprobante;
                 }));
+
+                const start = currentPage > 3 ? currentPage - 2 : 1;
+                const end = currentPage + 2 - pageCount > 0 ? (currentPage + 2) - (currentPage + 2 - pageCount) : currentPage + 2
+                const list = [];
+                for (let i = start; i <= end; i++) {
+                    list.push(i);
+                }
+                setPageList(list);
             })
             .catch((error) => {
                 console.log(error);
             });
-
-        const start = currentPage > 3 ? currentPage - 2 : 1;
-        const end = currentPage + 2 - pageCount > 0 ? (currentPage + 2) - (currentPage + 2 - pageCount) : currentPage + 2
-        const list = [];
-        for (let i = start; i <= end; i++) {
-            list.push(i);
-        }
-        setPageList(list);
-
     }, [currentPage, pageCount]);
 
     const loadData = () => {
@@ -129,7 +132,7 @@ const Home = () => {
                                                             </Col>
                                                             <Col className='mb-1 d-flex justify-content-center' md={12} lg={4}>
                                                                 <Button variant='danger' onClick={() => setShowDeleteModal(true)}><FontAwesomeIcon icon={faTrashCan} /></Button>
-                                                                <DeleteModal show={showDeleteModal} onClose={() => { setShowDeleteModal(false) }} onDelete={()=> handleDelete(comprobante._id)} />
+                                                                <DeleteModal show={showDeleteModal} onClose={() => { setShowDeleteModal(false) }} onDelete={() => handleDelete(comprobante._id)} />
                                                             </Col>
                                                         </Row>
                                                     </Container>
@@ -155,10 +158,13 @@ const Home = () => {
             <Row>
                 <Col>
                     {
-                        pageList && comprobantes && <Pagination className='float-end'>
-                            <Pagination.Item disabled={currentPage === 1} onClick={() => { setCurrentPage(currentPage - 1) }}>
-                                {'<'}
-                            </Pagination.Item>
+                        pageList &&
+                        <Pagination className='float-end'>
+                            {
+                                pageList.length > 0 && <Pagination.Item disabled={currentPage === 1} onClick={() => { setCurrentPage(currentPage - 1) }}>
+                                    {'<'}
+                                </Pagination.Item>
+                            }
                             {
                                 pageList.map((pageNumber) => {
                                     return (
@@ -168,9 +174,11 @@ const Home = () => {
                                     )
                                 })
                             }
-                            <Pagination.Item disabled={currentPage === pageCount} onClick={() => { setCurrentPage(currentPage + 1) }}>
-                                {'>'}
-                            </Pagination.Item>
+                            {
+                                pageList.length > 0 && <Pagination.Item disabled={currentPage === pageCount} onClick={() => { setCurrentPage(currentPage + 1) }}>
+                                    {'>'}
+                                </Pagination.Item>
+                            }
                         </Pagination>
                     }
                 </Col>
