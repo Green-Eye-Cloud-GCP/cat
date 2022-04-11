@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
     return handler(req, res, next);
   } catch (err) {
     console.log(err)
-    return res.redirect('/');
+    return res.redirect('/'); //TODO GREEN_EYE_URL
   }
 });
 
