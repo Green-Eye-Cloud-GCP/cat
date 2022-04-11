@@ -16,11 +16,7 @@ const View = () => {
     const [dataLoaded, setDataLoaded] = useState(false);
 
     useEffect(() => {
-        axios.get('/api/comprobantes/' + id, {
-            params: {
-                token: process.env.REACT_APP_TOKEN
-            }
-        })
+        axios.get('/api/comprobantes/' + id)
             .then((response) => {
                 const data = response.data.data;
 

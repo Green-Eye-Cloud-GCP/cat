@@ -16,20 +16,15 @@ const Home = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleDelete = (id) => {
-        axios.delete('/api/comprobantes/' + id, {
-            params: {
-                token: process.env.REACT_APP_TOKEN
-            }
-        })
+        axios.delete('/api/comprobantes/' + id)
             .then((response) => {
-                console.log(response.data.data);
                 setShowDeleteModal(false);
                 setPageCount();
                 setCurrentPage(1);
                 loadData();
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     }
 
@@ -42,12 +37,10 @@ const Home = () => {
 
         axios.get('/api/comprobantes', {
             params: {
-                page: currentPage,
-                token: process.env.REACT_APP_TOKEN
+                page: currentPage
             }
         })
             .then((response) => {
-                console.log(response.data.data);
                 setComprobantes(response.data.data.map(comprobante => {
                     comprobante.fecha = new Date(comprobante.fecha);
                     return comprobante;
@@ -62,23 +55,18 @@ const Home = () => {
                 setPageList(list);
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     }, [currentPage, pageCount]);
 
     const loadData = () => {
-        axios.get('/api/comprobantes/pages', {
-            params: {
-                token: process.env.REACT_APP_TOKEN
-            }
-        })
+        axios.get('/api/comprobantes/pages')
             .then((response) => {
                 const pageCount = response.data.data;
-                console.log(pageCount);
                 setPageCount(pageCount);
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     }
 

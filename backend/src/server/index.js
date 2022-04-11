@@ -15,13 +15,13 @@ app.set('port', port);
 const server = http.createServer(app);
 env.init()
   .then(() => {
-    console.log('Environment initialized');
+    console.info('Environment initialized');
 
     db.mongoConnect()
       .then(() => {
-        console.log('Connected to MongoDB');
+        console.info('Connected to MongoDB');
         server.listen(port);
-        console.log('Listening on ' + bind);
+        console.info('Listening on ' + bind);
       })
       .catch((err) => {
         throw err;

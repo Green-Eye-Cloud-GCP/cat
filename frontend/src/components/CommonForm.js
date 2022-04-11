@@ -75,8 +75,7 @@ const CommonForm = forwardRef((props, ref) => {
         axios.get('https://www.greeneye.cloud/back/gps', {
             params: {
                 org: 'adblick',
-                types: ['Deposito insumos', 'Campo', 'CAT'],
-                token: process.env.REACT_APP_TOKEN
+                types: ['Deposito insumos', 'Campo', 'CAT']
             }
         })
             .then((response) => {
@@ -105,9 +104,6 @@ const CommonForm = forwardRef((props, ref) => {
         formData.append('destino', destino);
         formData.append('cantidad', cantidad);
         formData.append('file', fileInputRef.current.files[0]);
-
-        //TODO: eliminar
-        formData.append('token', process.env.REACT_APP_TOKEN);
 
         axios({
             url: props.mode === 'Nuevo' ? '/api/comprobantes' : '/api/comprobantes/' + id,

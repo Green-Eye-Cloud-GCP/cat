@@ -21,8 +21,16 @@ app.use(function (req, res, next) {
     services.verifyToken(req.cookies.token);
     return handler(req, res, next);
   } catch (err) {
-    console.log(err)
-    return res.redirect('/'); //TODO GREEN_EYE_URL
+    return res.redirect(process.env.GREEN_EYE_URL);
+  }
+});
+
+app.get('/*', function (req, res, next) {
+  try {
+    services.verifyToken(req.cookies.token);
+    return res.sendFile(path.join(__dirname, 'public/index.html'), (err) => { if (err) { return next(err) } });
+  } catch (err) {
+    return res.redirect(process.env.GREEN_EYE_URL);
   }
 });
 
@@ -32,7 +40,3 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
-
-//TODO: elimianar token
-//TODO: Cannot GET /view/6253848439369a532a751902
-//TODO: eliminar console.log

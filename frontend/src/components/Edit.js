@@ -10,11 +10,7 @@ const Edit = () => {
     const commonFormRef = useRef();
 
     useEffect(() => {
-        axios.get('/api/comprobantes/' + id, {
-            params: {
-                token: process.env.REACT_APP_TOKEN
-            }
-        })
+        axios.get('/api/comprobantes/' + id)
             .then((response) => {
                 commonFormRef.current.setFormData(response.data.data);
             })
