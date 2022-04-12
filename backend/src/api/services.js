@@ -62,8 +62,24 @@ const uploadFile = function (fileName, buffer) {
     })
 }
 
+const deleteFile = function (fileName) {
+    return new Promise((resolve, reject) => {
+
+        const bucket = storage.bucket(process.env.CLOUD_BUCKET);
+        const blob = bucket.file(fileName);
+        blob.delete()
+            .then(function () {
+                resolve();
+            })
+            .catch(function (err) {
+                reject(err);
+            })
+    })
+}
+
 module.exports = {
     promesifyRequest,
     generateReadSignedUrl,
-    uploadFile
+    uploadFile,
+    deleteFile
 }

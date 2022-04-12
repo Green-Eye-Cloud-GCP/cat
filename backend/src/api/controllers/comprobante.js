@@ -22,25 +22,25 @@ const newComprobante = async function (req, res, next) {
 
     try {
         await services.uploadFile(fileName, req.file.buffer)
-
-        const comprobante = new Comprobante();
-
-        comprobante.org = org;
-        comprobante.user = idUser;
-        comprobante.fecha = fecha;
-        comprobante.origenes = idsOrigen.split(',');
-        comprobante.destino = idDestino;
-        comprobante.cantidad = cantidad;
-        comprobante.archivo = fileName;
-
-        comprobante.save(function (err, doc) {
-            if (err) { return next(err) }
-
-            return res.status(200).json({ 'error': false, 'message': 'Done!', 'data': doc });
-        });
     } catch (err) {
         return next(err)
     }
+
+    const comprobante = new Comprobante();
+
+    comprobante.org = org;
+    comprobante.user = idUser;
+    comprobante.fecha = fecha;
+    comprobante.origenes = idsOrigen.split(',');
+    comprobante.destino = idDestino;
+    comprobante.cantidad = cantidad;
+    comprobante.archivo = fileName;
+
+    comprobante.save(function (err, doc) {
+        if (err) { return next(err) }
+
+        return res.status(200).json({ 'error': false, 'message': 'Done!', 'data': doc });
+    });
 }
 
 const getComprobantes = function (req, res, next) {
@@ -128,10 +128,15 @@ const delComprobante = function (req, res, next) {
 
     const { org } = req.user;
 
-    Comprobante.findOneAndDelete({ '_id': req.params.id, 'org': org }).exec((err, doc) => {
+    Comprobante.findOneAndDelete({ '_id': req.params.id, 'org': org }).exec(async (err, doc) => {
         if (err) { return next(err) }
 
         if (doc) {
+            try {
+                await services.deleteFile(doc.archivo);
+            } catch (err) {
+                return next(err);
+            }
             return res.status(200).json({ 'error': false, 'message': 'Done!', 'data': doc });
         } else {
             return res.status(400).json({ 'error': true, 'message': 'Comprobante not found' });
@@ -160,7 +165,11 @@ const editComprobante = async function (req, res, next) {
     if (req.file) {
         const fileName = idUser + '-' + (new Date).getTime().toString() + path.extname(req.file.originalname);
         query.archivo = fileName;
-        await services.uploadFile(fileName, req.file.buffer)
+        try {
+            await services.uploadFile(fileName, req.file.buffer);
+        } catch (err) {
+            return next(err);
+        }
     }
 
     Comprobante.findOneAndUpdate({ '_id': req.params.id, 'org': org }, { '$set': query }, { 'returnOriginal': false }).exec((err, doc) => {
