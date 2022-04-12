@@ -57,7 +57,6 @@ const CommonForm = (props) => {
     }, [showSuccess]);
 
     useEffect(() => {
-        console.log(props.data)
         if (!props.data) { return }
 
         const { fecha, origenes, destino, cantidad, archivo, _id } = props.data;
