@@ -77,7 +77,8 @@ const CommonForm = (props) => {
         axios.get('https://www.greeneye.cloud/back/gps', {
             params: {
                 org: 'adblick',
-                types: ['Deposito insumos', 'Campo', 'CAT']
+                types: ['Deposito insumos', 'Campo', 'CAT'],
+                token: process.env.REACT_APP_TOKEN
             }
         })
             .then((response) => {
@@ -96,8 +97,7 @@ const CommonForm = (props) => {
 
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
-            setValidated(true);
-            return
+            return setValidated(true);
         }
 
         const formData = new FormData();
@@ -113,7 +113,7 @@ const CommonForm = (props) => {
             method: props.mode === 'Nuevo' ? 'POST' : 'PUT',
             data: formData
         })
-            .then((response) => {
+            .then(() => {
                 if (props.mode === 'Editar') {
                     navigate('/');
                 } else {
