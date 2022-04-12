@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip, Placeholder, Alert } from 'react-bootstrap';
@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 
-const CommonForm = forwardRef((props, ref) => {
+const CommonForm = (props) => {
 
     const [validated, setValidated] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -44,31 +44,33 @@ const CommonForm = forwardRef((props, ref) => {
         ])
     }
 
-    const handleSuccess = () => {
-        setShowSuccess(true);
-        setTimeout(
-            () => setShowSuccess(false),
-            3000
-        );
-    }
+    useEffect(() => {
+        if (!showSuccess) { return }
 
-    useImperativeHandle(ref,
-        () => ({
+        let timer = setTimeout(() => {
+            setShowSuccess(false)
+        }, 3000);
 
-            setFormData(data) {
-                const origenes = data.origenes.map((origen) => origen._id);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [showSuccess]);
 
-                setFecha(moment(data.fecha).format('YYYY-MM-DD'));
-                setOrigenes(origenes);
-                setDestino(data.destino._id);
-                setCantidad(data.cantidad);
-                setArchivo(data.archivo);
-                setId(data._id);
-                setDataLoaded(true);
-            }
+    useEffect(() => {
+        console.log(props.data)
+        if (!props.data) { return }
 
-        })
-    );
+        const { fecha, origenes, destino, cantidad, archivo, _id } = props.data;
+
+        setFecha(moment(fecha).format('YYYY-MM-DD'));
+        setOrigenes(origenes.map((origen) => origen._id));
+        setDestino(destino._id);
+        setCantidad(cantidad);
+        setArchivo(archivo);
+        setId(_id);
+        setDataLoaded(true);
+
+    }, [props.data]);
 
 
     useEffect(() => {
@@ -104,6 +106,7 @@ const CommonForm = forwardRef((props, ref) => {
         formData.append('destino', destino);
         formData.append('cantidad', cantidad);
         formData.append('file', fileInputRef.current.files[0]);
+        formData.append('token', process.env.REACT_APP_TOKEN);
 
         axios({
             url: props.mode === 'Nuevo' ? '/api/comprobantes' : '/api/comprobantes/' + id,
@@ -114,7 +117,7 @@ const CommonForm = forwardRef((props, ref) => {
                 if (props.mode === 'Editar') {
                     navigate('/');
                 } else {
-                    handleSuccess();
+                    setShowSuccess(true);
                     setFecha('');
                     setOrigenes(['']);
                     setDestino('');
@@ -307,6 +310,6 @@ const CommonForm = forwardRef((props, ref) => {
             </Form>
         </Container>
     )
-});
+}
 
 export default CommonForm;

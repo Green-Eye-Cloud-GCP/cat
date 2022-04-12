@@ -16,7 +16,9 @@ const Home = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleDelete = (id) => {
-        axios.delete('/api/comprobantes/' + id)
+        axios.delete('/api/comprobantes/' + id, {
+            params: { token: process.env.REACT_APP_TOKEN }
+        })
             .then((response) => {
                 setShowDeleteModal(false);
                 setPageCount();
@@ -37,7 +39,8 @@ const Home = () => {
 
         axios.get('/api/comprobantes', {
             params: {
-                page: currentPage
+                page: currentPage,
+                token: process.env.REACT_APP_TOKEN
             }
         })
             .then((response) => {
@@ -60,7 +63,9 @@ const Home = () => {
     }, [currentPage, pageCount]);
 
     const loadData = () => {
-        axios.get('/api/comprobantes/pages')
+        axios.get('/api/comprobantes/pages', {
+            params: { token: process.env.REACT_APP_TOKEN }
+        })
             .then((response) => {
                 const pageCount = response.data.data;
                 setPageCount(pageCount);

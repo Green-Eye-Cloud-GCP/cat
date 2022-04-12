@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,12 +7,14 @@ import CommonForm from './CommonForm';
 const Edit = () => {
 
     const { id } = useParams();
-    const commonFormRef = useRef();
+    const [formData, setFormData] = useState();
 
     useEffect(() => {
-        axios.get('/api/comprobantes/' + id)
+        axios.get('/api/comprobantes/' + id, {
+            params: { token: process.env.REACT_APP_TOKEN }
+        })
             .then((response) => {
-                commonFormRef.current.setFormData(response.data.data);
+                setFormData(response.data.data);
             })
             .catch((error) => {
                 console.error(error);
@@ -20,7 +22,7 @@ const Edit = () => {
     }, [id]);
 
     return (
-        <CommonForm ref={commonFormRef} mode='Editar'/>
+        <CommonForm data={formData} mode='Editar' />
     )
 }
 
