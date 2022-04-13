@@ -73,12 +73,18 @@ const CommonForm = (props) => {
 
 
     useEffect(() => {
+
+        const params = {
+            org: 'adblick',
+            types: ['Deposito insumos', 'Campo', 'CAT']
+        };
+
+        if (process.env.NODE_ENV !== 'production') {
+            params['token'] = process.env.REACT_APP_TOKEN
+        }
+
         axios.get('https://www.greeneye.cloud/back/gps', {
-            params: {
-                org: 'adblick',
-                types: ['Deposito insumos', 'Campo', 'CAT'],
-                token: process.env.REACT_APP_TOKEN
-            }
+            params: params
         })
             .then((response) => {
                 setOpcionesOrigenes(response.data.filter(opcion => opcion.type !== 'CAT'));
@@ -105,7 +111,10 @@ const CommonForm = (props) => {
         formData.append('destino', destino);
         formData.append('cantidad', cantidad);
         formData.append('file', fileInputRef.current.files[0]);
-        formData.append('token', process.env.REACT_APP_TOKEN);
+
+        if (process.env.NODE_ENV !== 'production') {
+            formData.append('token', process.env.REACT_APP_TOKEN);
+        }
 
         axios({
             url: props.mode === 'Nuevo' ? '/api/comprobantes' : '/api/comprobantes/' + id,

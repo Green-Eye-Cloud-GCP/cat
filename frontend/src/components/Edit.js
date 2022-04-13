@@ -10,8 +10,15 @@ const Edit = () => {
     const [formData, setFormData] = useState();
 
     useEffect(() => {
+
+        const params = {};
+
+        if (process.env.NODE_ENV !== 'production') {
+            params['token'] = process.env.REACT_APP_TOKEN
+        }
+
         axios.get('/api/comprobantes/' + id, {
-            params: { token: process.env.REACT_APP_TOKEN }
+            params: params
         })
             .then((response) => {
                 setFormData(response.data.data);
