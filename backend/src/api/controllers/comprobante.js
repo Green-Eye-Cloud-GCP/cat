@@ -47,9 +47,27 @@ const getComprobantes = function (req, res, next) {
 
     const { org } = req.user;
     const token = req.token;
-    const { page = 1 } = req.query;
+    const { page = 1, destino, origen, from, until } = req.query;
 
-    Comprobante.find({ 'org': org })
+    const query = { 'org': org };
+    if (destino) {
+        query['destino'] = destino;
+    }
+    if (origen) {
+        query['origen'] = origen;
+    }
+    if (from || until) {
+        const dateQuery = {};
+        if (from) {
+            dateQuery['$gte'] = from;
+        }
+        if (until) {
+            dateQuery['$lte'] = until;
+        }
+        query['fecha'] = dateQuery;
+    }
+
+    Comprobante.find(query)
         .skip((page - 1) * pageSize)
         .limit(pageSize)
         .select(['fecha', 'user', 'destino', 'cantidad', 'origenes'])
