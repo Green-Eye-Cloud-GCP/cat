@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip, Placeholder, Alert } from 'react-bootstrap';
+import { Button, Form, Container, Col, Row, OverlayTrigger, Tooltip, Placeholder, Alert, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
@@ -10,6 +10,7 @@ const CommonForm = (props) => {
 
     const [validated, setValidated] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [sendingRequest, setSendingRequest] = useState(true);
 
     const [opcionesOrigenes, setOpcionesOrigenes] = useState([]);
     const [opcionesDestinos, setOpcionesDestinos] = useState([]);
@@ -116,6 +117,8 @@ const CommonForm = (props) => {
             formData.append('token', process.env.REACT_APP_TOKEN);
         }
 
+        setSendingRequest(true);
+
         axios({
             url: props.mode === 'Nuevo' ? '/api/comprobantes' : '/api/comprobantes/' + id,
             method: props.mode === 'Nuevo' ? 'POST' : 'PUT',
@@ -125,7 +128,8 @@ const CommonForm = (props) => {
                 if (props.mode === 'Editar') {
                     navigate('/');
                 } else {
-                    setShowSuccess(true);
+                    setSendingRequest(false);
+                    setShowSuccess(true); //TODO: go to alert
                     setFecha('');
                     setOrigenes(['']);
                     setDestino('');
@@ -311,7 +315,23 @@ const CommonForm = (props) => {
                         ? <></>
                         : (
                             <Row className='mt-5'>
-                                <Col><Button className='float-end' variant='primary' type='submit'>{props.mode}</Button></Col>
+                                <Col>
+                                    {
+                                        sendingRequest
+                                            ? <Button className='float-end' variant="primary" disabled>
+                                                <Spinner
+                                                    as="span"
+                                                    animation="border"
+                                                    size="sm"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                />
+                                                <span className="visually-hidden">Enviando...</span>
+                                            </Button>
+                                            : <Button className='float-end' variant='primary' type='submit'>{props.mode}</Button>
+                                    }
+
+                                </Col>
                             </Row>
                         )
                 }
