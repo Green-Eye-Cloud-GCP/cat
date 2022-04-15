@@ -10,7 +10,8 @@ const CommonForm = (props) => {
 
     const [validated, setValidated] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const [sendingRequest, setSendingRequest] = useState(true);
+    const [showError, setShowError] = useState(false);
+    const [sendingRequest, setSendingRequest] = useState(false);
 
     const [opcionesOrigenes, setOpcionesOrigenes] = useState([]);
     const [opcionesDestinos, setOpcionesDestinos] = useState([]);
@@ -24,6 +25,8 @@ const CommonForm = (props) => {
     const [dataLoaded, setDataLoaded] = useState(false);
 
     const fileInputRef = useRef();
+    const successErrorRef = useRef();
+
     const navigate = useNavigate();
 
     const handleSelectChange = (value, index) => {
@@ -46,16 +49,17 @@ const CommonForm = (props) => {
     }
 
     useEffect(() => {
-        if (!showSuccess) { return }
+        if (!showSuccess && !showError) { return }
 
         let timer = setTimeout(() => {
-            setShowSuccess(false)
-        }, 3000);
+            setShowSuccess(false);
+            setShowError(false);
+        }, 5000);
 
         return () => {
             clearTimeout(timer);
         };
-    }, [showSuccess]);
+    }, [showSuccess, showError]);
 
     useEffect(() => {
         if (!props.data) { return }
@@ -96,6 +100,16 @@ const CommonForm = (props) => {
             });
     }, []);
 
+    const handleShowSuccess = () => {
+        setShowSuccess(true);
+        successErrorRef.current.scrollIntoView();
+    }
+    
+    const handleShowError = () => {
+        setShowError(true);
+        successErrorRef.current.scrollIntoView();
+    }
+
     const handleSubmit = (event) => {
 
         event.preventDefault();
@@ -128,26 +142,34 @@ const CommonForm = (props) => {
                 if (props.mode === 'Editar') {
                     navigate('/');
                 } else {
-                    setSendingRequest(false);
-                    setShowSuccess(true); //TODO: go to alert
                     setFecha('');
                     setOrigenes(['']);
                     setDestino('');
                     setCantidad('');
                     fileInputRef.current.value = '';
+                    handleShowSuccess();
                 }
             })
             .catch((error) => {
                 console.error(error);
+                handleShowError();
+            })
+            .finally(() => {
+                setSendingRequest(false);
             });
     };
 
     return (
         <Container className='bg-light border py-3'>
 
-            <Alert show={showSuccess} variant="success" onClose={() => setShowSuccess(false)} dismissible>
-                <Alert.Heading>Comprobante creado!</Alert.Heading>
-            </Alert>
+            <div ref={successErrorRef}>
+                <Alert show={showSuccess} variant="success" onClose={() => setShowSuccess(false)} dismissible>
+                    <Alert.Heading>Comprobante creado!</Alert.Heading>
+                </Alert>
+                <Alert show={showError} variant="danger" onClose={() => setShowError(false)} dismissible>
+                    <Alert.Heading>Error al crear comprobante!</Alert.Heading>
+                </Alert>
+            </div>
 
             <h1 className='text-center'>{props.mode} comprobante</h1>
 
